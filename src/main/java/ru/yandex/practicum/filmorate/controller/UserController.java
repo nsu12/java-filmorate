@@ -39,7 +39,7 @@ public class UserController {
         }
 
         validate(user);
-        users.set(user.getId()-1, user);
+        users.set(user.getId() - 1, user);
         log.info("User {} successfully updated", user.getLogin());
         return user;
     }

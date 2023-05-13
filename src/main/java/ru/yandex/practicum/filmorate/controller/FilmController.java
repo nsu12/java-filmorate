@@ -41,7 +41,7 @@ public class FilmController {
         }
 
         validate(film);
-        films.set(film.getId()-1, film);
+        films.set(film.getId() - 1, film);
         log.info("Film {} successfully updated", film.getDescription());
         return film;
     }
