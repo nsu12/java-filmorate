@@ -1,56 +1,56 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 @Slf4j
 @RestController
-@RequestMapping(value = "/films")
+@RequestMapping
 public class FilmController {
-    private final List<Film> films = new ArrayList<>();
+    private final FilmService service;
 
-    @GetMapping
-    public List<Film> getAll() {
-        return films;
+    public FilmController(FilmService service) {
+        this.service = service;
     }
 
-    @PostMapping
-    public Film create(@Valid @RequestBody Film film) {
-        validate(film);
-        films.add(film);
-        film.setId(films.size());
-        log.info("Film {} successfully added", film.getDescription());
-        return film;
+    @GetMapping(value = "/films")
+    public Collection<Film> getAll() {
+        return service.getAllFilms();
     }
 
-    @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
-
-        if (film.getId() > films.size()) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "the film is not found"
-            );
-        }
-
-        validate(film);
-        films.set(film.getId() - 1, film);
-        log.info("Film {} successfully updated", film.getDescription());
-        return film;
+    @PostMapping(value = "/films")
+    public Film create(@RequestBody Film film) {
+       return service.create(film);
     }
 
-    private void validate(Film film) throws ValidationException {
-        final var firstFilmDate = LocalDate.of(1895, 12, 25);
-        if (film.getReleaseDate().isBefore(firstFilmDate)) {
-            log.error("Film {} is released before 1985-12-25", film.getName());
-            throw new ValidationException("Invalid film release date");
-        }
+    @GetMapping(value = "/films/{id}")
+    public Film get(@PathVariable("id") Long filmId) {
+        return service.getById(filmId);
+    }
+
+    @PutMapping(value = "/films")
+    public Film update(@RequestBody Film film) {
+        return service.update(film);
+    }
+
+    @PutMapping(value = "/films/{id}/like/{userId}")
+    public void setLike(@PathVariable("id") Long filmId, @PathVariable("userId") Long userId) {
+        service.addLikeFromUser(filmId, userId);
+    }
+
+    @DeleteMapping(value = "/films/{id}/like/{userId}")
+    public void removeLike(@PathVariable("id") Long filmId, @PathVariable("userId") Long userId) {
+        service.removeLikeFromUser(filmId, userId);
+    }
+
+    @GetMapping(value = "/films/popular")
+    public Collection<Film> getListOfFirstPopularFilms(
+            @RequestParam(name = "count", defaultValue = "10", required = false) Integer count
+    ) {
+        return service.getListOfPopular(count);
     }
 }
