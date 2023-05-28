@@ -13,7 +13,9 @@ import java.util.Collection;
 public class UserController {
     private final UserService service;
 
-    public UserController(UserService service) { this.service = service; }
+    public UserController(UserService service) {
+        this.service = service;
+    }
 
     @GetMapping(value = "/users")
     public Collection<User> getAllUsers() {
@@ -21,13 +23,19 @@ public class UserController {
     }
 
     @PostMapping(value = "/users")
-    public User createUser(@RequestBody User user) { return service.create(user); }
+    public User createUser(@RequestBody User user) {
+        return service.create(user);
+    }
 
-    @GetMapping(value ="/users/{id}")
-    public User getUser(@PathVariable("id") Long id) { return service.getUser(id); }
+    @GetMapping(value = "/users/{id}")
+    public User getUser(@PathVariable("id") Long id) {
+        return service.getUser(id);
+    }
 
     @PutMapping(value = "/users")
-    public User updateUser(@RequestBody User user) { return service.update(user); }
+    public User updateUser(@RequestBody User user) {
+        return service.update(user);
+    }
 
     @PutMapping(value = "/users/{id}/friends/{friendId}")
     public void addFriendToUser(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
