@@ -30,7 +30,9 @@ public class FilmService {
         this.userStorage = userStorage;
     }
 
-    public Collection<Film> getAllFilms() { return filmStorage.getAll(); }
+    public Collection<Film> getAllFilms() {
+        return filmStorage.getAll();
+    }
 
     public Film create(@Valid Film film) {
         validateReleaseDate(film);
@@ -81,6 +83,6 @@ public class FilmService {
     }
 
     private int compareByLikes(final Film f0, final Film f1) {
-        return -1*Integer.compare(f0.getWhoLiked().size(), f1.getWhoLiked().size()); // sort from more to less (inverse order)
+        return -1 * Integer.compare(f0.getWhoLiked().size(), f1.getWhoLiked().size()); // sort from more to less (inverse order)
     }
 }
