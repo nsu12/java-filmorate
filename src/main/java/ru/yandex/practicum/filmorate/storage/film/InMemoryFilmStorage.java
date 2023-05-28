@@ -24,7 +24,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film add(Film film) {
+    public Film addOrThrow(Film film) {
         if (film.getId() != 0 && films.containsKey(film.getId())) {
             throw new EntryAlreadyExistsException(
                     String.format("Фильм %s с id - %d уже существует", film.getName(), film.getId())
@@ -37,7 +37,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film get(long id) {
+    public Film getOrThrow(long id) {
         Film film = films.get(id);
         if (film == null) {
             throw new EntryNotFoundException(
@@ -54,7 +54,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void update(Film film) {
+    public void updateOrThrow(Film film) {
         if (films.remove(film.getId()) == null) {
             throw new EntryNotFoundException(
                     String.format(
@@ -67,7 +67,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void remove(long id) {
+    public void removeOrThrow(long id) {
         if (films.remove(id) == null) {
             throw new EntryNotFoundException(
                     String.format("Не удалось удалить фильм с id %d - фильм с таким id не найден", id)

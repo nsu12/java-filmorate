@@ -9,15 +9,33 @@ public interface FilmStorage {
     /**
      * Добавление фильма в хранилище
      * @param film объект \ref Film который должен быть добавлен
-     * @return объект Film у которого заполнено поле id
+     * @return объект Film обновленными полями в случае успеха, либо исключение EntryAlreadyExistsException
      */
-    Film add(Film film);
+    Film addOrThrow(Film film);
 
-    Film get(long id);
+    /**
+     * Получение фильма из хранилища
+     * @param id фильма
+     * @return объект Film, либо исключение в случае если фильм с заданным id не найден
+     */
+    Film getOrThrow(long id);
 
+    /**
+     * Получение списка всех фильмов
+     * @return список всех фильмов
+     */
     Collection<Film> getAll();
 
-    void update(Film film);
+    /**
+     * Обновление фильма в хранилице
+     * @param film обновляемый объект.
+     * Выбрасывает \ref EntryNotFoundException если объект не найден в хранилище
+     */
+    void updateOrThrow(Film film);
 
-    void remove(long id);
+    /**
+     * Удаляет фильм из хранилища
+     * @param id фильма
+     */
+    void removeOrThrow(long id);
 }

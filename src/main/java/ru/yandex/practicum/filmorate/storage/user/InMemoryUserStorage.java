@@ -26,7 +26,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User get(long id) {
+    public User getOrThrow(long id) {
         User user = users.get(id);
         if (user == null) {
             throw new EntryNotFoundException(
@@ -37,7 +37,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User add(User user) {
+    public User addOrThrow(User user) {
         if (user.getId() != 0 && users.containsKey(user.getId())) {
             throw new EntryAlreadyExistsException(
                     String.format("Пользователь с id %d уже существует", user.getId())
@@ -49,7 +49,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void update(User user) {
+    public void updateOrThrow(User user) {
         if (users.remove(user.getId()) == null) {
             throw new EntryNotFoundException(
                     String.format(
@@ -62,7 +62,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void delete(long id) {
+    public void deleteOrThrow(long id) {
         if (users.remove(id) == null) {
             throw new EntryNotFoundException(
                     String.format("Не удалось удалить пользователя с id %d - пользователь не найден", id)

@@ -26,14 +26,14 @@ public class UserService {
 
     public User create(@Valid User user) {
         validateUserName(user);
-        final User createdUser = storage.add(user);
+        final User createdUser = storage.addOrThrow(user);
         log.info("User '{}' created", createdUser.getLogin());
         return createdUser;
     }
 
     public User update(@Valid User user) {
         validateUserName(user);
-        storage.update(user);
+        storage.updateOrThrow(user);
         log.info("User '{}' successfully updated", user.getLogin());
         return user;
     }
@@ -43,7 +43,7 @@ public class UserService {
     }
 
     public User getUser(long id) {
-        return storage.get(id);
+        return storage.getOrThrow(id);
     }
 
     private void validateUserName(User user) {
@@ -54,34 +54,34 @@ public class UserService {
     }
 
     public void addFriendToUser(long userId, long friendId) {
-         final User user = storage.get(userId);
-         final User friend = storage.get(friendId);
+         final User user = storage.getOrThrow(userId);
+         final User friend = storage.getOrThrow(friendId);
          user.getFriends().add(friend.getId());
-         storage.update(user);
+         storage.updateOrThrow(user);
          friend.getFriends().add(user.getId());
-         storage.update(friend);
+         storage.updateOrThrow(friend);
          log.info("User '{}' added to friends to '{}'", friend.getLogin(), user.getLogin());
     }
 
     public void removeFriendFromUser(long userId, long friendId) {
-        final User user = storage.get(userId);
+        final User user = storage.getOrThrow(userId);
         if (user.getFriends().remove(friendId)) {
-            storage.update(user);
-            log.info("User '{}' removed from friends of '{}'", storage.get(friendId).getLogin(), user.getLogin());
+            storage.updateOrThrow(user);
+            log.info("User '{}' removed from friends of '{}'", storage.getOrThrow(friendId).getLogin(), user.getLogin());
         }
     }
 
     public Collection<User> getUserFriends(long userId) {
-        final var userFriends = storage.get(userId).getFriends();
-        return userFriends.stream().map(storage::get).collect(Collectors.toList());
+        final var userFriends = storage.getOrThrow(userId).getFriends();
+        return userFriends.stream().map(storage::getOrThrow).collect(Collectors.toList());
     }
 
     public Collection<User> getCommonFriendsForUsers(long userId, long otherId) {
-        final var userFriends = storage.get(userId).getFriends();
-        final var otherUserFriends = storage.get(otherId).getFriends();
+        final var userFriends = storage.getOrThrow(userId).getFriends();
+        final var otherUserFriends = storage.getOrThrow(otherId).getFriends();
         return userFriends.stream()
                 .filter(otherUserFriends::contains)
-                .map(storage::get)
+                .map(storage::getOrThrow)
                 .collect(Collectors.toList());
     }
 }

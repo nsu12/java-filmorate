@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
 import javax.validation.ValidationException;
@@ -19,27 +21,29 @@ import java.util.stream.Collectors;
 @Validated
 public class FilmService {
 
-    private final FilmStorage storage;
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(FilmStorage storage) {
-        this.storage = storage;
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
     }
 
-    public Collection<Film> getAllFilms() { return storage.getAll(); }
+    public Collection<Film> getAllFilms() { return filmStorage.getAll(); }
 
     public Film create(@Valid Film film) {
         validateReleaseDate(film);
-        return storage.add(film);
+        return filmStorage.addOrThrow(film);
     }
 
     public Film getById(long id) {
-        return storage.get(id);
+        return filmStorage.getOrThrow(id);
     }
 
     public Film update(@Valid Film film) {
         validateReleaseDate(film);
-        storage.update(film);
+        filmStorage.updateOrThrow(film);
         return film;
     }
 
@@ -52,29 +56,31 @@ public class FilmService {
     }
 
     public void addLikeFromUser(long filmId, long userId) {
-        final Film film = storage.get(filmId);
+        final Film film = filmStorage.getOrThrow(filmId);
+        final User user = userStorage.getOrThrow(userId);
         if (film.getWhoLiked().add(userId)) {
-            storage.update(film);
-            log.info("Film '{}' liked by user with id {}", film.getName(), userId);
+            filmStorage.updateOrThrow(film);
+            log.info("Film '{}' liked by user '{}'", film.getName(), user.getLogin());
         }
     }
 
     public void removeLikeFromUser(long filmId, long userId) {
-        final Film film = storage.get(filmId);
+        final Film film = filmStorage.getOrThrow(filmId);
+        final User user = userStorage.getOrThrow(userId);
         if (film.getWhoLiked().remove(userId)) {
-            storage.update(film);
-            log.info("User with id {} remove like from film '{}'", userId, film.getName());
+            filmStorage.updateOrThrow(film);
+            log.info("User '{}' remove like from film '{}'", user.getName(), film.getName());
         }
     }
 
     public Collection<Film> getListOfPopular(int count) {
-        return storage.getAll().stream()
+        return filmStorage.getAll().stream()
                 .sorted(this::compareByLikes)
                 .limit(count)
                 .collect(Collectors.toList());
     }
 
     private int compareByLikes(final Film f0, final Film f1) {
-        return Integer.compare(f0.getWhoLiked().size(), f1.getWhoLiked().size());
+        return -1*Integer.compare(f0.getWhoLiked().size(), f1.getWhoLiked().size()); // sort from more to less (inverse order)
     }
 }
