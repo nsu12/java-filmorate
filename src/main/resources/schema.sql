@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS film (
 CREATE TABLE IF NOT EXISTS film_genre (
     film_id INTEGER REFERENCES film(id) ON DELETE CASCADE,
     genre_id INTEGER REFERENCES genre(id) ON DELETE CASCADE,
-
+    CONSTRAINT uniq_film_genre_pair UNIQUE (film_id, genre_id)
 );
 
 CREATE TABLE IF NOT EXISTS user_account (
