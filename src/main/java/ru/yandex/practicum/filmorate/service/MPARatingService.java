@@ -16,7 +16,11 @@ public class MPARatingService {
         this.ratingStorage = storage;
     }
 
-    public MPARating getById(long id) { return ratingStorage.getOrThrow(id); }
+    public MPARating getById(long id) {
+        return ratingStorage.getOrThrow(id);
+    }
 
-    public Collection<MPARating> getAll() { return ratingStorage.getAll(); }
+    public Collection<MPARating> getAll() {
+        return ratingStorage.getAll();
+    }
 }

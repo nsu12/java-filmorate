@@ -21,7 +21,9 @@ public class GenreController {
     }
 
     @GetMapping(value = "/genres")
-    public Collection<Genre> getAll() { return service.getAllGenres(); }
+    public Collection<Genre> getAll() {
+        return service.getAllGenres();
+    }
 
     @GetMapping(value = "/genres/{id}")
     public Genre get(@PathVariable("id") Long genreId) {

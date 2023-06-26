@@ -17,7 +17,11 @@ public class GenreService {
         this.genreStorage = genreStorage;
     }
 
-    public Genre getById(long id) { return genreStorage.getOrThrow(id); }
+    public Genre getById(long id) {
+        return genreStorage.getOrThrow(id);
+    }
 
-    public Collection<Genre> getAllGenres() { return genreStorage.getAll(); }
+    public Collection<Genre> getAllGenres() {
+        return genreStorage.getAll();
+    }
 }

@@ -23,7 +23,9 @@ public class MPARatingController {
     }
 
     @GetMapping(value = "/mpa")
-    public Collection<MPARating> getAll() { return service.getAll(); }
+    public Collection<MPARating> getAll() {
+        return service.getAll();
+    }
 
     @GetMapping(value = "/mpa/{id}")
     public MPARating get(@PathVariable("id") Long ratingId) {
