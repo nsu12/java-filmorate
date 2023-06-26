@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
-@Qualifier("userDBStorage")
 @Slf4j
 public class UserDBStorage implements UserStorage {
 

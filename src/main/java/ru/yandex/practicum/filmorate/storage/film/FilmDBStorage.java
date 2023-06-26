@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Component
-@Qualifier("filmDBStorage")
 @Slf4j
 public class FilmDBStorage implements FilmStorage {
 
