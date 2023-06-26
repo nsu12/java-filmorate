@@ -6,6 +6,7 @@ import javax.validation.constraints.*;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 public class Film {
@@ -19,6 +20,13 @@ public class Film {
     @Positive
     private int duration;
     private MpaRating mpa;
-    private List<Genre> genres = new ArrayList<>();
-    //private Set<Genre> genres = new TreeSet<>(Comparator.comparingLong(Genre::getId));
+    private Set<Genre> genres = new TreeSet<>(Comparator.comparingLong(Genre::getId));
+
+    public List<Genre> getGenres() {
+        return genres.stream().collect(Collectors.toList());
+    }
+
+    public void setGenres(List<Genre> listOfGenres) {
+        genres.addAll(listOfGenres);
+    }
 }
