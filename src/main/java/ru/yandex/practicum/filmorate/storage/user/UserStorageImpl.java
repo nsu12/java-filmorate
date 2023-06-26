@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -19,23 +19,20 @@ import java.util.Objects;
 
 @Component
 @Slf4j
-public class UserDBStorage implements UserStorage {
+@RequiredArgsConstructor
+public class UserStorageImpl implements UserStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public UserDBStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
     public Collection<User> getAll() {
-        return jdbcTemplate.query("SELECT * FROM user_account", UserDBStorage::makeUser);
+        return jdbcTemplate.query("SELECT * FROM user_account", UserStorageImpl::makeUser);
     }
 
     @Override
     public User getOrThrow(long id) {
         final String sqlQuery = "SELECT * FROM user_account WHERE id = ?";
-        final List<User> users = jdbcTemplate.query(sqlQuery, UserDBStorage::makeUser, id);
+        final List<User> users = jdbcTemplate.query(sqlQuery, UserStorageImpl::makeUser, id);
 
         if (users.isEmpty()) {
             throw new EntryNotFoundException(

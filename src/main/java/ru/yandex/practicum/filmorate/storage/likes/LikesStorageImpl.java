@@ -1,20 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.likes;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-@Slf4j
-public class LikesDaoImpl implements LikesDao {
+@RequiredArgsConstructor
+public class LikesStorageImpl implements LikesStorage {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public LikesDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public void addLikeToFilmOrThrow(long userId, long filmId) {

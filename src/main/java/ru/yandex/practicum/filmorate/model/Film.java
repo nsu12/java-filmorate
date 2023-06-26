@@ -18,7 +18,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration;
-    private MPARating mpa;
+    private MpaRating mpa;
     private List<Genre> genres = new ArrayList<>();
     //private Set<Genre> genres = new TreeSet<>(Comparator.comparingLong(Genre::getId));
 }

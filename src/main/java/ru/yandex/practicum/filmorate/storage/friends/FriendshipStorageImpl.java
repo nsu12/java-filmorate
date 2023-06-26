@@ -1,28 +1,24 @@
 package ru.yandex.practicum.filmorate.storage.friends;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserDBStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorageImpl;
 
 import java.util.Collection;
 
 @Component
-public class FriendshipDaoImpl implements FriendshipDao {
+@RequiredArgsConstructor
+public class FriendshipStorageImpl implements FriendshipStorage {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public FriendshipDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Collection<User> getUserFriendsOrThrow(long userId) {
         final String sqlQuery = "SELECT * FROM user_account " +
                 "WHERE id IN (SELECT friend_id FROM user_friends WHERE user_id = ?)";
-        return jdbcTemplate.query(sqlQuery, UserDBStorage::makeUser, userId);
+        return jdbcTemplate.query(sqlQuery, UserStorageImpl::makeUser, userId);
     }
 
     @Override

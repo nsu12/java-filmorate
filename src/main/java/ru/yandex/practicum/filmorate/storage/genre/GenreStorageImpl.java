@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.genre;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntryNotFoundException;
@@ -12,24 +12,20 @@ import java.util.Collection;
 import java.util.List;
 
 @Component
-public class GenreDBStorage implements GenreStorage {
+@RequiredArgsConstructor
+public class GenreStorageImpl implements GenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public GenreDBStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
     public Collection<Genre> getAll() {
-        return jdbcTemplate.query("SELECT * FROM genre", GenreDBStorage::makeGenre);
+        return jdbcTemplate.query("SELECT * FROM genre", GenreStorageImpl::makeGenre);
     }
 
     @Override
     public Genre getOrThrow(long id) {
         final String sqlQuery = "SELECT * FROM genre WHERE id = ?";
-        final List<Genre> genres = jdbcTemplate.query(sqlQuery, GenreDBStorage::makeGenre, id);
+        final List<Genre> genres = jdbcTemplate.query(sqlQuery, GenreStorageImpl::makeGenre, id);
 
         if (genres.isEmpty()) {
             throw new EntryNotFoundException(

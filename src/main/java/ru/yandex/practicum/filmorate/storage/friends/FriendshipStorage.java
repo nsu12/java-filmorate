@@ -4,7 +4,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 
-public interface FriendshipDao {
+public interface FriendshipStorage {
     Collection<User> getUserFriendsOrThrow(long userId);
 
     void addFriendOrThrow(long userId, long friendId);

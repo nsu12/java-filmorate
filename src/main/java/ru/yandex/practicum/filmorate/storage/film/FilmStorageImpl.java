@@ -1,15 +1,14 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntryNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.MPARating;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 
 
 import java.sql.Date;
@@ -22,14 +21,10 @@ import java.util.Objects;
 
 @Component
 @Slf4j
-public class FilmDBStorage implements FilmStorage {
+@RequiredArgsConstructor
+public class FilmStorageImpl implements FilmStorage {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public FilmDBStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public Film addOrThrow(Film film) {
@@ -63,7 +58,7 @@ public class FilmDBStorage implements FilmStorage {
                 "FROM film AS f " +
                 "JOIN mpa_rating AS mr ON f.rating_id = mr.id " +
                 "WHERE f.id = ?";
-        final List<Film> films = jdbcTemplate.query(sqlQuery, FilmDBStorage::makeFilm, id);
+        final List<Film> films = jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, id);
 
         if (films.isEmpty()) {
             throw new EntryNotFoundException(
@@ -82,7 +77,7 @@ public class FilmDBStorage implements FilmStorage {
                 "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id, mr.name AS rating_name " +
                 "FROM film AS f " +
                 "JOIN mpa_rating AS mr ON f.rating_id = mr.id",
-                FilmDBStorage::makeFilm);
+                FilmStorageImpl::makeFilm);
     }
 
     @Override
@@ -139,7 +134,7 @@ public class FilmDBStorage implements FilmStorage {
                 "       GROUP BY film_id) AS sq ON sq.film_id = f.id " +
                 "ORDER BY sq.likes_count DESC " +
                 "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, FilmDBStorage::makeFilm, count);
+        return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, count);
     }
 
     private static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
@@ -149,7 +144,7 @@ public class FilmDBStorage implements FilmStorage {
         film.setDescription(rs.getString("description"));
         film.setReleaseDate(rs.getDate("release_date").toLocalDate());
         film.setDuration(rs.getInt("duration"));
-        film.setMpa(new MPARating(rs.getLong("rating_id"), rs.getString("rating_name")));
+        film.setMpa(new MpaRating(rs.getLong("rating_id"), rs.getString("rating_name")));
         return film;
     }
 }

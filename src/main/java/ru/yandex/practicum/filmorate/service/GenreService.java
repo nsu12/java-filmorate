@@ -1,21 +1,16 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.storage.genre.GenreDBStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorageImpl;
 
 import java.util.Collection;
 
 @Service
+@RequiredArgsConstructor
 public class GenreService {
-
-    private final GenreDBStorage genreStorage;
-
-    @Autowired
-    public GenreService(GenreDBStorage genreStorage) {
-        this.genreStorage = genreStorage;
-    }
+    private final GenreStorageImpl genreStorage;
 
     public Genre getById(long id) {
         return genreStorage.getOrThrow(id);

@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.genre;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -8,20 +8,16 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.util.List;
 
 @Component
-public class FilmGenreDaoImpl implements FilmGenreDao {
+@RequiredArgsConstructor
+public class FilmGenreStorageImpl implements FilmGenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public FilmGenreDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<Genre> getFilmGenresOrThrow(long filmId) {
         final String sqlQuery = "SELECT * FROM genre " +
                 "WHERE id IN (SELECT genre_id FROM film_genre WHERE film_id = ?) ORDER BY id";
-        return jdbcTemplate.query(sqlQuery, GenreDBStorage::makeGenre, filmId);
+        return jdbcTemplate.query(sqlQuery, GenreStorageImpl::makeGenre, filmId);
     }
 
     @Override

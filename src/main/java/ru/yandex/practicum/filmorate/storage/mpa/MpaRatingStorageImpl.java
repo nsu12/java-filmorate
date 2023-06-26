@@ -1,10 +1,10 @@
 package ru.yandex.practicum.filmorate.storage.mpa;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntryNotFoundException;
-import ru.yandex.practicum.filmorate.model.MPARating;
+import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,24 +12,20 @@ import java.util.Collection;
 import java.util.List;
 
 @Component
-public class RatingDBStorage implements RatingStorage {
+@RequiredArgsConstructor
+public class MpaRatingStorageImpl implements MpaRatingStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    @Autowired
-    public RatingDBStorage(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    @Override
+    public Collection<MpaRating> getAll() {
+        return jdbcTemplate.query("SELECT * FROM mpa_rating", MpaRatingStorageImpl::makeRating);
     }
 
     @Override
-    public Collection<MPARating> getAll() {
-        return jdbcTemplate.query("SELECT * FROM mpa_rating", RatingDBStorage::makeRating);
-    }
-
-    @Override
-    public MPARating getOrThrow(long id) {
+    public MpaRating getOrThrow(long id) {
         final String sqlQuery = "SELECT * FROM mpa_rating WHERE id = ?";
-        final List<MPARating> ratings = jdbcTemplate.query(sqlQuery, RatingDBStorage::makeRating, id);
+        final List<MpaRating> ratings = jdbcTemplate.query(sqlQuery, MpaRatingStorageImpl::makeRating, id);
 
         if (ratings.isEmpty()) {
             throw new EntryNotFoundException(
@@ -42,8 +38,8 @@ public class RatingDBStorage implements RatingStorage {
         }
     }
 
-    private static MPARating makeRating(ResultSet rs, int rowNum) throws SQLException {
-        return new MPARating(
+    private static MpaRating makeRating(ResultSet rs, int rowNum) throws SQLException {
+        return new MpaRating(
                 rs.getLong("id"),
                 rs.getString("name")
         );

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 @Getter
-public class MPARating {
+public class MpaRating {
     private final long id;
     private final String name;
 }
