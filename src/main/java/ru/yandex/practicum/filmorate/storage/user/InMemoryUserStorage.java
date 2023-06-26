@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntryAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exception.EntryNotFoundException;
@@ -15,7 +14,6 @@ public class InMemoryUserStorage implements UserStorage {
     private final Map<Long, User> users;
     private long nextId = 1;
 
-    @Autowired
     public InMemoryUserStorage() {
         this.users = new HashMap<>();
     }

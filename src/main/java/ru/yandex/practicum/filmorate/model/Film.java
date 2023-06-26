@@ -5,8 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
 public class Film {
@@ -19,6 +18,7 @@ public class Film {
     private LocalDate releaseDate;
     @Positive
     private int duration;
-
-    private Set<Long> whoLiked = new HashSet<>();
+    private MPARating mpa;
+    private List<Genre> genres = new ArrayList<>();
+    //private Set<Genre> genres = new TreeSet<>(Comparator.comparingLong(Genre::getId));
 }
