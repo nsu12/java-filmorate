@@ -38,4 +38,6 @@ public interface FilmStorage {
      * @param id фильма
      */
     void removeOrThrow(long id);
+
+    Collection<Film> getPopularFilms(int count);
 }
