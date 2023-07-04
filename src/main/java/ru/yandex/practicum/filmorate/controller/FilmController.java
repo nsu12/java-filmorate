@@ -9,7 +9,7 @@ import java.util.Collection;
 
 @Slf4j
 @RestController
-@RequestMapping
+@RequestMapping(value = "/films")
 public class FilmController {
     private final FilmService service;
 
@@ -17,40 +17,48 @@ public class FilmController {
         this.service = service;
     }
 
-    @GetMapping(value = "/films")
+    @GetMapping
     public Collection<Film> getAll() {
         return service.getAllFilms();
     }
 
-    @PostMapping(value = "/films")
+    @PostMapping
     public Film create(@RequestBody Film film) {
        return service.create(film);
     }
 
-    @GetMapping(value = "/films/{id}")
+    @GetMapping(value = "/{id}")
     public Film get(@PathVariable("id") Long filmId) {
         return service.getById(filmId);
     }
 
-    @PutMapping(value = "/films")
+    @PutMapping
     public Film update(@RequestBody Film film) {
         return service.update(film);
     }
 
-    @PutMapping(value = "/films/{id}/like/{userId}")
+    @PutMapping(value = "/{id}/like/{userId}")
     public void setLike(@PathVariable("id") Long filmId, @PathVariable("userId") Long userId) {
         service.addLikeFromUser(filmId, userId);
     }
 
-    @DeleteMapping(value = "/films/{id}/like/{userId}")
+    @DeleteMapping(value = "/{id}/like/{userId}")
     public void removeLike(@PathVariable("id") Long filmId, @PathVariable("userId") Long userId) {
         service.removeLikeFromUser(filmId, userId);
     }
 
-    @GetMapping(value = "/films/popular")
+    @GetMapping(value = "/popular")
     public Collection<Film> getListOfFirstPopularFilms(
             @RequestParam(name = "count", defaultValue = "10") Integer count
     ) {
         return service.getListOfPopular(count);
+    }
+
+    @GetMapping(value = "/common")
+    public Collection<Film> getListOfCommonFilms(
+            @RequestParam(name = "userId") Long userId,
+            @RequestParam(name = "friendId") Long friendId
+    ) {
+        return service.getListOfCommon(userId, friendId);
     }
 }

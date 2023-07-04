@@ -93,4 +93,8 @@ public class FilmService {
     public Collection<Film> getListOfPopular(int count) {
         return filmStorage.getPopularFilms(count);
     }
+
+    public Collection<Film> getListOfCommon(long userId, long friendId) {
+        return filmStorage.getCommonFilmsSortedByPopularity(userId, friendId);
+    }
 }
