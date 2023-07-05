@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserStorage storage;
-
+    private final UserStorage userStorage;
     private final FriendshipStorage friendshipStorage;
 
     public User create(@Valid User user) {
@@ -41,8 +41,8 @@ public class UserService {
         return storage.getAll();
     }
 
-    public User getUser(long id) {
-        return storage.getOrThrow(id);
+    public User getUserById(long id) {
+        return userStorage.getOrThrow(id);
     }
 
     private void validateUserName(User user) {
