@@ -15,6 +15,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -146,5 +147,60 @@ public class FilmStorageImpl implements FilmStorage {
         film.setDuration(rs.getInt("duration"));
         film.setMpa(new MpaRating(rs.getLong("rating_id"), rs.getString("rating_name")));
         return film;
+    }
+
+    @Override
+    public Collection<Film> getRecommendedFilms(int id) {
+        int maxCount = 0;
+        int theMostSimilarUserId = 0;
+        List<Film> recomendations = new ArrayList<>();
+
+        List<Integer> filmIdUser = getIdFilmsListFromUserFilm(id);
+
+        String user = "select user_id from favorite_films ";
+        List<Integer> userIdWhoStayLike = jdbcTemplate.query(user, this::mapRowToUserIdWhoStayLike);
+
+        for (Integer userId : userIdWhoStayLike) {
+            int count = 0;
+            if (userId == id) {
+                continue;
+            }
+            List<Integer> filmListIdUserWhoStayLike = getIdFilmsListFromUserFilm(userId);
+
+            for (Integer integer : filmListIdUserWhoStayLike) {
+                if (filmIdUser.contains(integer)) {
+                    count++;
+                }
+            }
+            if (count > maxCount) {
+                maxCount = count;
+                theMostSimilarUserId = userId;
+            }
+        }
+
+        List<Integer> filmIdUserWithMaxCross = new ArrayList<>();
+        if (theMostSimilarUserId != 0) {
+            filmIdUserWithMaxCross = getIdFilmsListFromUserFilm(theMostSimilarUserId);
+        }
+
+        for (Integer idUserWithMaxCross : filmIdUserWithMaxCross) {
+            if (!filmIdUser.contains(idUserWithMaxCross)) {
+                recomendations.add(getOrThrow(idUserWithMaxCross));
+            }
+        }
+        return recomendations;
+    }
+
+    private Integer mapRowToUserIdWhoStayLike(ResultSet resultSet, int rowNum) throws SQLException {
+        return resultSet.getInt("user_id");
+    }
+
+    private List<Integer> getIdFilmsListFromUserFilm(int id) {
+        String sql = "select film_id from favorite_films where USER_ID = ?";
+        return jdbcTemplate.query(sql, this::mapRowToFilmId, id);
+    }
+
+    private Integer mapRowToFilmId(ResultSet resultSet, int rowNum) throws SQLException {
+        return resultSet.getInt("film_id");
     }
 }

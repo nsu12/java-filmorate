@@ -40,4 +40,6 @@ public interface FilmStorage {
     void removeOrThrow(long id);
 
     Collection<Film> getPopularFilms(int count);
+
+    Collection<Film> getRecommendedFilms(int userId);
 }
