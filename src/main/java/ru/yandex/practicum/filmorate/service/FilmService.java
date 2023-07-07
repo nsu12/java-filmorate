@@ -71,6 +71,7 @@ public class FilmService {
     public void delete(Long filmId) {
         filmStorage.deleteOrThrow(filmId);
     }
+
     private void validateReleaseDate(Film film) throws ValidationException {
         final var firstFilmDate = LocalDate.of(1895, 12, 25);
         if (film.getReleaseDate().isBefore(firstFilmDate)) {
