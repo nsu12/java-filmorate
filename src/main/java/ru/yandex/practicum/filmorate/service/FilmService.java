@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.director.DirectorFilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.FilmGenreStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikesStorage;
@@ -29,6 +30,8 @@ public class FilmService {
     private final FilmGenreStorage filmGenreStorage;
     private final LikesStorage filmLikesStorage;
 
+    private final DirectorFilmStorage directorFilmStorage;
+
     public Collection<Film> getAllFilms() {
         var films = filmStorage.getAll();
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
@@ -39,7 +42,10 @@ public class FilmService {
         validateReleaseDate(film);
         Film filmCreated = filmStorage.addOrThrow(film);
         film.getGenres().forEach(genre -> filmGenreStorage.addGenreToFilmOrThrow(genre.getId(), filmCreated.getId()));
+        film.getDirectors().forEach(director -> directorFilmStorage.addDirectorFromFilmOrThrow(director.getId(),filmCreated.getId()));
         filmCreated.setGenres(filmGenreStorage.getFilmGenresOrThrow(filmCreated.getId()));
+        filmCreated.clearDirectors();
+        filmCreated.setDirectors(directorFilmStorage.getDirectorFilmOrThrow(filmCreated.getId()));
         return filmCreated;
     }
 
@@ -65,6 +71,19 @@ public class FilmService {
                 .forEach(genre -> filmGenreStorage.addGenreToFilmOrThrow(genre.getId(), film.getId()));
         // update genres names in film
         film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId()));
+
+        var oldDirectors = directorFilmStorage.getDirectorFilmOrThrow(film.getId());
+        oldDirectors.stream()
+                .filter(director -> !film.getDirectors().contains(director))
+                .collect(Collectors.toList())
+                .forEach(director -> directorFilmStorage.removeDirectorFromFilmOrThrow(director.getId(),film.getId()));
+        film.getDirectors().stream()
+                .filter(director -> !oldDirectors.contains(director))
+                .collect(Collectors.toList())
+                .forEach(director -> directorFilmStorage.addDirectorFromFilmOrThrow(director.getId(),film.getId()));
+        film.clearDirectors();
+        film.setDirectors(directorFilmStorage.getDirectorFilmOrThrow(film.getId()));
+
         return film;
     }
 

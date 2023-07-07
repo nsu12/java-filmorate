@@ -108,7 +108,7 @@ public class DirectorStorageImpl implements DirectorStorage{
         }
     }
 
-    private static Director makeDirector(ResultSet rs, int rowNum) throws SQLException {
+    public static Director makeDirector(ResultSet rs, int rowNum) throws SQLException {
         Director director = new Director();
         director.setId(rs.getLong("id"));
         director.setName(rs.getString("name"));
