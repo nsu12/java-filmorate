@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
@@ -21,8 +20,12 @@ public class DirectorController {
     }
 
     @PostMapping(value = "/directors")
-    public Director create(@Valid Director director) {
+    public Director create(@RequestBody @Valid Director director) {
         return service.create(director);
+    }
+    @PutMapping(value = "/directors")
+    public Director update(@RequestBody @Valid Director director) {
+        return service.update(director);
     }
 
     @GetMapping(value = "/directors/{id}")
@@ -35,8 +38,8 @@ public class DirectorController {
         return service.getAllDirectors();
     }
 
-    @DeleteMapping(value = "/directors")
-    public Director delete(@PathVariable("id") Long id) {
-        return service.delete(id);
+    @DeleteMapping(value = "/directors/{id}")
+    public void delete(@PathVariable("id") Long id) {
+         service.delete(id);
     }
 }
