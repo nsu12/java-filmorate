@@ -68,6 +68,9 @@ public class FilmService {
         return film;
     }
 
+    public void delete(Long filmId) {
+        filmStorage.deleteOrThrow(filmId);
+    }
     private void validateReleaseDate(Film film) throws ValidationException {
         final var firstFilmDate = LocalDate.of(1895, 12, 25);
         if (film.getReleaseDate().isBefore(firstFilmDate)) {
@@ -91,10 +94,14 @@ public class FilmService {
     }
 
     public Collection<Film> getListOfPopular(int count) {
-        return filmStorage.getPopularFilms(count);
+        final var films = filmStorage.getPopularFilms(count);
+        films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
+        return films;
     }
 
     public Collection<Film> getListOfCommon(long userId, long friendId) {
-        return filmStorage.getCommonFilmsSortedByPopularity(userId, friendId);
+        final var films = filmStorage.getCommonFilmsSortedByPopularity(userId, friendId);
+        films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
+        return films;
     }
 }

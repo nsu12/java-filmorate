@@ -9,7 +9,7 @@ import java.util.Collection;
 
 @Slf4j
 @RestController
-@RequestMapping
+@RequestMapping(value = "/users")
 public class UserController {
     private final UserService service;
 
@@ -17,42 +17,47 @@ public class UserController {
         this.service = service;
     }
 
-    @GetMapping(value = "/users")
+    @GetMapping
     public Collection<User> getAllUsers() {
         return service.getAllUsers();
     }
 
-    @PostMapping(value = "/users")
+    @PostMapping
     public User createUser(@RequestBody User user) {
         return service.create(user);
     }
 
-    @GetMapping(value = "/users/{id}")
+    @GetMapping(value = "/{id}")
     public User getUser(@PathVariable("id") Long id) {
         return service.getUser(id);
     }
 
-    @PutMapping(value = "/users")
+    @PutMapping
     public User updateUser(@RequestBody User user) {
         return service.update(user);
     }
 
-    @PutMapping(value = "/users/{id}/friends/{friendId}")
+    @DeleteMapping(value = "/{id}")
+    public void deleteUser(@PathVariable("id") Long id) {
+        service.delete(id);
+    }
+
+    @PutMapping(value = "/{id}/friends/{friendId}")
     public void addFriendToUser(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
         service.addFriendToUser(userId, friendId);
     }
 
-    @DeleteMapping(value = "/users/{id}/friends/{friendId}")
+    @DeleteMapping(value = "/{id}/friends/{friendId}")
     public void removeFriendFromUser(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
         service.removeFriendFromUser(userId, friendId);
     }
 
-    @GetMapping(value = "/users/{id}/friends")
+    @GetMapping(value = "/{id}/friends")
     public Collection<User> getUserFriends(@PathVariable("id") Long userId) {
         return service.getUserFriends(userId);
     }
 
-    @GetMapping(value = "/users/{id}/friends/common/{otherId}")
+    @GetMapping(value = "/{id}/friends/common/{otherId}")
     public Collection<User> getUsersCommonFriends(
             @PathVariable("id") Long userId, @PathVariable("otherId") Long otherId
     ) {
