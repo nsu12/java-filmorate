@@ -52,7 +52,7 @@ public interface FilmStorage {
      * @param userId идентификатор пользователя
      * @return список фильмов
      */
-    Collection<Film> getRecommendedFilms(Long userId);
+    Collection<Film> getRecommendedFilms(long userId);
 
    /**
      * Возвращает список общих для обоих пользователей фильмов, отсортированных по популярности (количеству лайков)

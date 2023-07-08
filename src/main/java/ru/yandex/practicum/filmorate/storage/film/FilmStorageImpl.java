@@ -176,10 +176,10 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getRecommendedFilms(Long id) {
+    public Collection<Film> getRecommendedFilms(long id) {
         long maxCount = 0L;
         long theMostSimilarUserId = 0L;
-        List<Film> recomendations = new ArrayList<>();
+        List<Film> recommendations = new ArrayList<>();
 
         List<Long> filmIdUser = getIdFilmsListFromUserFilm(id);
 
@@ -211,10 +211,10 @@ public class FilmStorageImpl implements FilmStorage {
 
         for (Long idUserWithMaxCross : filmIdUserWithMaxCross) {
             if (!filmIdUser.contains(idUserWithMaxCross)) {
-                recomendations.add(getOrThrow(idUserWithMaxCross));
+                recommendations.add(getOrThrow(idUserWithMaxCross));
             }
         }
-        return recomendations;
+        return recommendations;
     }
 
     private Long mapRowToUserIdWhoStayLike(ResultSet resultSet, int rowNum) throws SQLException {

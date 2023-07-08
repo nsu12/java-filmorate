@@ -94,12 +94,13 @@ public class FilmService {
         return filmStorage.getPopularFilms(count);
     }
 
-    public Collection<Film> getRecommendedFilms(Long id) {
+    public Collection<Film> getListOfCommon(long userId, long friendId) {
+        return filmStorage.getCommonFilmsSortedByPopularity(userId, friendId);
+    }
+
+    public Collection<Film> getRecommendedFilms(long id) {
         var films = filmStorage.getRecommendedFilms(id);
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         return films;
-
-      public Collection<Film> getListOfCommon(long userId, long friendId) {
-        return filmStorage.getCommonFilmsSortedByPopularity(userId, friendId);
     }
 }
