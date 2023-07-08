@@ -94,7 +94,7 @@ public class FilmService {
         return filmStorage.getPopularFilms(count);
     }
 
-    public Collection<Film> getRecommendedFilms(int id) {
+    public Collection<Film> getRecommendedFilms(Long id) {
         var films = filmStorage.getRecommendedFilms(id);
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         return films;

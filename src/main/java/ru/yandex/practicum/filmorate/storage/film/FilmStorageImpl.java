@@ -150,24 +150,24 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getRecommendedFilms(int id) {
-        int maxCount = 0;
-        int theMostSimilarUserId = 0;
+    public Collection<Film> getRecommendedFilms(Long id) {
+        long maxCount = 0L;
+        long theMostSimilarUserId = 0L;
         List<Film> recomendations = new ArrayList<>();
 
-        List<Integer> filmIdUser = getIdFilmsListFromUserFilm(id);
+        List<Long> filmIdUser = getIdFilmsListFromUserFilm(id);
 
         String user = "select user_id from favorite_films ";
-        List<Integer> userIdWhoStayLike = jdbcTemplate.query(user, this::mapRowToUserIdWhoStayLike);
+        List<Long> userIdWhoStayLike = jdbcTemplate.query(user, this::mapRowToUserIdWhoStayLike);
 
-        for (Integer userId : userIdWhoStayLike) {
-            int count = 0;
-            if (userId == id) {
+        for (Long userId : userIdWhoStayLike) {
+            long count = 0L;
+            if (Objects.equals(userId, id)) {
                 continue;
             }
-            List<Integer> filmListIdUserWhoStayLike = getIdFilmsListFromUserFilm(userId);
+            List<Long> filmListIdUserWhoStayLike = getIdFilmsListFromUserFilm(userId);
 
-            for (Integer integer : filmListIdUserWhoStayLike) {
+            for (Long integer : filmListIdUserWhoStayLike) {
                 if (filmIdUser.contains(integer)) {
                     count++;
                 }
@@ -178,12 +178,12 @@ public class FilmStorageImpl implements FilmStorage {
             }
         }
 
-        List<Integer> filmIdUserWithMaxCross = new ArrayList<>();
+        List<Long> filmIdUserWithMaxCross = new ArrayList<>();
         if (theMostSimilarUserId != 0) {
             filmIdUserWithMaxCross = getIdFilmsListFromUserFilm(theMostSimilarUserId);
         }
 
-        for (Integer idUserWithMaxCross : filmIdUserWithMaxCross) {
+        for (Long idUserWithMaxCross : filmIdUserWithMaxCross) {
             if (!filmIdUser.contains(idUserWithMaxCross)) {
                 recomendations.add(getOrThrow(idUserWithMaxCross));
             }
@@ -191,16 +191,16 @@ public class FilmStorageImpl implements FilmStorage {
         return recomendations;
     }
 
-    private Integer mapRowToUserIdWhoStayLike(ResultSet resultSet, int rowNum) throws SQLException {
-        return resultSet.getInt("user_id");
+    private Long mapRowToUserIdWhoStayLike(ResultSet resultSet, int rowNum) throws SQLException {
+        return resultSet.getLong("user_id");
     }
 
-    private List<Integer> getIdFilmsListFromUserFilm(int id) {
+    private List<Long> getIdFilmsListFromUserFilm(Long id) {
         String sql = "select film_id from favorite_films where USER_ID = ?";
         return jdbcTemplate.query(sql, this::mapRowToFilmId, id);
     }
 
-    private Integer mapRowToFilmId(ResultSet resultSet, int rowNum) throws SQLException {
-        return resultSet.getInt("film_id");
+    private Long mapRowToFilmId(ResultSet resultSet, int rowNum) throws SQLException {
+        return resultSet.getLong("film_id");
     }
 }
