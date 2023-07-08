@@ -138,6 +138,32 @@ public class FilmStorageImpl implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, count);
     }
 
+    @Override
+    public Collection<Film> getCommonFilmsSortedByPopularity(long user1Id, long user2Id) {
+        final String sqlQuery =
+                        "SELECT f.id, " +
+                        "   f.name," +
+                        "   f.description," +
+                        "   f.release_date, " +
+                        "   f.duration, " +
+                        "   f.rating_id, " +
+                        "   mr.name AS rating_name, " +
+                        "   sq.likes_count " +
+                        "FROM film AS f " +
+                        "JOIN mpa_rating AS mr ON f.rating_id = mr.id " +
+                        "LEFT JOIN (" +
+                        "       SELECT film_id, COUNT(film_id) AS likes_count" +
+                        "       FROM favorite_films" +
+                        "       GROUP BY film_id) AS sq ON sq.film_id = f.id " +
+                        "WHERE film_id IN (" +
+                        "       SELECT film_id FROM favorite_films" +
+                        "       WHERE user_id = ? OR user_id = ?" +
+                        "       GROUP BY film_id" +
+                        "       HAVING COUNT(film_id) = 2) " +
+                        "ORDER BY sq.likes_count DESC ";
+        return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, user1Id, user2Id);
+    }
+
     private static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         Film film = new Film();
         film.setId(rs.getLong("id"));
