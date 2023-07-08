@@ -14,62 +14,62 @@ import java.util.Collection;
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
-    private final UserService service;
+    private final UserService userService;
     private final FilmService filmService;
 
-    public UserController(UserService service, FilmService filmService) {
-        this.service = service;
+    public UserController(UserService userService, FilmService filmService) {
+        this.userService = userService;
         this.filmService = filmService;
     }
 
     @GetMapping
     public Collection<User> getAllUsers() {
-        return service.getAllUsers();
+        return userService.getAllUsers();
     }
 
     @PostMapping
     public User createUser(@RequestBody User user) {
-        return service.create(user);
+        return userService.create(user);
     }
 
     @GetMapping(value = "/{id}")
     public User getUser(@PathVariable("id") Long id) {
-        return service.getUser(id);
+        return userService.getUser(id);
     }
 
     @PutMapping
     public User updateUser(@RequestBody User user) {
-        return service.update(user);
+        return userService.update(user);
     }
 
     @DeleteMapping(value = "/{id}")
     public void deleteUser(@PathVariable("id") Long id) {
-        service.delete(id);
+        userService.delete(id);
     }
 
     @PutMapping(value = "/{id}/friends/{friendId}")
     public void addFriendToUser(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
-        service.addFriendToUser(userId, friendId);
+        userService.addFriendToUser(userId, friendId);
     }
 
     @DeleteMapping(value = "/{id}/friends/{friendId}")
     public void removeFriendFromUser(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
-        service.removeFriendFromUser(userId, friendId);
+        userService.removeFriendFromUser(userId, friendId);
     }
 
     @GetMapping(value = "/{id}/friends")
     public Collection<User> getUserFriends(@PathVariable("id") Long userId) {
-        return service.getUserFriends(userId);
+        return userService.getUserFriends(userId);
     }
 
     @GetMapping(value = "/{id}/friends/common/{otherId}")
     public Collection<User> getUsersCommonFriends(
             @PathVariable("id") Long userId, @PathVariable("otherId") Long otherId
     ) {
-        return service.getCommonFriendsForUsers(userId, otherId);
+        return userService.getCommonFriendsForUsers(userId, otherId);
     }
 
-    @GetMapping(value = "/users/{id}/recommendations")
+    @GetMapping(value = "/{id}/recommendations")
     public Collection<Film> getFilmRecommendations(
             @PathVariable("id") Long userId
     ) {
