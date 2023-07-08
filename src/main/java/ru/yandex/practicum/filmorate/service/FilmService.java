@@ -16,6 +16,8 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -92,5 +94,9 @@ public class FilmService {
 
     public Collection<Film> getListOfPopular(int count) {
         return filmStorage.getPopularFilms(count);
+    }
+
+    public List<Film> searchFilms(Optional<String> query, List<String> by) {
+        return filmStorage.searchFilms(query,by);
     }
 }

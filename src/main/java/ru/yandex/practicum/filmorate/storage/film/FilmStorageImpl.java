@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntryNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 
@@ -15,9 +16,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -147,4 +147,107 @@ public class FilmStorageImpl implements FilmStorage {
         film.setMpa(new MpaRating(rs.getLong("rating_id"), rs.getString("rating_name")));
         return film;
     }
+
+    @Override
+    public List<Film> searchFilms(Optional<String> query, List<String> by) {
+        List<Film> searchedFilms = new ArrayList<>();
+        if (query.get().isEmpty() || query.isEmpty() || query.get().equals(" ")) {
+            return searchedFilms;
+        }
+        String stringInSql = "%" + query.get().toLowerCase() + "%";
+        //поиск по названию
+        String searchFilmSqlByName = "SELECT f.id\n" +
+                "  ,f.name\n" +
+                "  ,f.description \n" +
+                "  ,f.release_date \n" +
+                "  ,f.duration \n" +
+                "  ,f.rating_id\n" +
+                "  ,rm.rating_id\n" +
+                "  ,rm.name\n" +
+                "  ,GROUP_CONCAT(DISTINCT Concat(g.id,'-',g.name) ORDER BY Concat(g.id,'-',g.name)) AS GENRE_ID_NAME\n" +
+                "  ,GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS DIRECTOR_ID_NAME\n" +
+                "from film f\n" +
+                "LEFT JOIN mpa_rating rm  ON f.rating_id =rm.rating_id \n" +
+                "LEFT JOIN film_genre fg ON f.id =fg.film_id \n" +
+                "LEFT JOIN genre g ON fg.genre_id =g.id\n" +
+                "LEFT JOIN director_film fd ON f.id = fd.film_id\n" +
+                "LEFT JOIN director d ON fd.director_id = d.id\n" +
+                "WHERE LOWER(f.name) LIKE ?\n" +
+                "GROUP BY f.id\n" +
+                "ORDER BY f.id DESC;";
+        String searchFilmSqlByDirector = "select f.id\n" +
+                "  ,f.name\n" +
+                "  ,f.description \n" +
+                "  ,f.release_date \n" +
+                "  ,f.duration \n" +
+                "  ,f.rating_id\n" +
+                "  ,rm.rating_id\n" +
+                "  ,rm.name\n" +
+                "  ,GROUP_CONCAT(DISTINCT Concat(g.id,'-',g.name) ORDER BY Concat(g.id,'-',g.name)) AS GENRE_ID_NAME\n" +
+                "  ,GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS DIRECTOR_ID_NAME\n" +
+                "from film f\n" +
+                "LEFT JOIN mpa_rating rm  ON f.rating_id =rm.rating_id \n" +
+                "LEFT JOIN film_genre fg ON f.id =fg.film_id \n" +
+                "LEFT JOIN genre g ON fg.genre_id =g.id\n" +
+                "LEFT JOIN director_film fd ON f.id = fd.film_id\n" +
+                "LEFT JOIN director d ON fd.director_id = d.id\n" +
+                "WHERE LOWER(d.name) LIKE ?\n" +
+                "GROUP BY f.id\n" +
+                "ORDER BY f.id DESC;";
+        String searchFilmSqlByAll = "select f.id\n" +
+                "  ,f.name\n" +
+                "  ,f.description \n" +
+                "  ,f.release_date \n" +
+                "  ,f.duration \n" +
+                "  ,f.rating_id\n" +
+                "  ,rm.rating_id\n" +
+                "  ,rm.name\n" +
+                "  ,GROUP_CONCAT(DISTINCT Concat(g.id,'-',g.name) ORDER BY Concat(g.id,'-',g.name)) AS GENRE_ID_NAME\n" +
+                "  ,GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS DIRECTOR_ID_NAME\n" +
+                "from film f\n" +
+                "LEFT JOIN mpa_rating rm  ON f.rating_id =rm.rating_id \n" +
+                "LEFT JOIN film_genre fg ON f.id =fg.film_id \n" +
+                "LEFT JOIN genre g ON fg.genre_id =g.id\n" +
+                "LEFT JOIN director_film fd ON f.id = fd.film_id\n" +
+                "LEFT JOIN director d ON fd.director_id = d.id\n" +
+                "WHERE LOWER(f.name) LIKE ?\n" +
+                "OR LOWER(d.name) LIKE ?\n" +
+                "GROUP BY f.id\n" +
+                "ORDER BY f.id DESC;";
+        if (by != null) {
+            log.debug("Запрос с параметром by");
+            if (by.size() == 1 & by.contains("name")) {
+                log.debug("Запрос на поиск фильма по названию");
+                return getSearchedFilms(searchFilmSqlByName, stringInSql);
+            }
+            if (by.size() == 1 & by.contains("director")) {
+                log.debug("Запрос на поиск фильма по режиссеру");
+                return getSearchedFilms(searchFilmSqlByDirector, stringInSql);
+            }
+            if (by.size() == 2 & by.contains("name") & by.contains("director")) {
+                log.debug("Запрос на поиск фильма по режиссеру и названию");
+                searchedFilms = jdbcTemplate.query(searchFilmSqlByAll, (rs, rowNum) -> makeFilm(rs,rowNum), stringInSql,
+                        stringInSql);
+                log.debug("Результаты поиска:");
+                for (Film film : searchedFilms) {
+                    log.debug("Фильм с film_id={}: {}", film.getId(), film);
+                }
+                return searchedFilms;
+            } else {
+                throw new IllegalArgumentException("Некорректный параметр by!");
+            }
+        }
+        log.debug("Получен запрос без параметра by, выполнен поиск по умолчанию");
+        return getSearchedFilms(searchFilmSqlByName, stringInSql);
+    }
+
+    private List<Film> getSearchedFilms(String sql, String stringInSql) {
+        List<Film> searchedFilms = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs,rowNum), stringInSql);
+        log.debug("Результаты поиска:");
+        for (Film film : searchedFilms) {
+            log.debug("Фильм с film_id={}: {}", film.getId(), film);
+        }
+        return searchedFilms;
+    }
+
 }

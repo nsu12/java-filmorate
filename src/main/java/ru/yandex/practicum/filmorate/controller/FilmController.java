@@ -6,6 +6,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -52,5 +54,12 @@ public class FilmController {
             @RequestParam(name = "count", defaultValue = "10") Integer count
     ) {
         return service.getListOfPopular(count);
+    }
+
+    @GetMapping("/search")
+    protected List<Film> searchFilms(@RequestParam(name = "query") Optional<String> query,
+                                     @RequestParam(required = false, name = "by") List<String> by) {
+        log.info("Запрос на поиск фильмов...");
+        return service.searchFilms(query, by);
     }
 }
