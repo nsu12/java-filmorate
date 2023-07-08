@@ -37,7 +37,7 @@ public interface FilmStorage {
      * Удаляет фильм из хранилища
      * @param id фильма
      */
-    void removeOrThrow(long id);
+    void deleteOrThrow(long id);
 
     /**
      * Возвращает список заданного количества самых популярных фильмов,

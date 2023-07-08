@@ -108,7 +108,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public void removeOrThrow(long id) {
+    public void deleteOrThrow(long id) {
         if (jdbcTemplate.update("DELETE FROM film WHERE id = ?", id) == 0) {
             throw new EntryNotFoundException(
                     String.format("Не удалось удалить фильм с id %d - фильм с таким id не найден", id)
