@@ -3,9 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.EventOperation;
-import ru.yandex.practicum.filmorate.model.EventType;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
+import ru.yandex.practicum.filmorate.exception.EntryNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.model.User;
@@ -24,7 +22,6 @@ public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final UserService userService;
     private final FilmService filmService;
-    private final EventService eventService;
     private final ReviewRatingStorage reviewLikeStorage;
 
     public Review getById(Integer id) {
@@ -57,7 +54,6 @@ public class ReviewService {
         Review review = reviewStorage.add(filmReview);
         log.debug("Добавлен отзыв с id = {}", review.getReviewId());
         log.trace("Итоговый отзыв: {}", review);
-        eventService.createEvent(review.getUserId(), EventType.REVIEW, EventOperation.ADD, review.getReviewId());
         return review;
     }
 
@@ -67,7 +63,6 @@ public class ReviewService {
         Review review = reviewStorage.update(filmReview);
         log.debug("Отзыв обновлён");
         log.trace("Итоговый отзыв: {}", review);
-        eventService.createEvent(review.getUserId(), EventType.REVIEW, EventOperation.UPDATE, review.getReviewId());
         return review;
     }
 
@@ -76,7 +71,6 @@ public class ReviewService {
         Review review = checkIfReviewExists(id);
         reviewStorage.delete(id);
         log.debug("Удалён отзыв с id = {}", id);
-        eventService.createEvent(review.getUserId(), EventType.REVIEW, EventOperation.REMOVE, review.getReviewId());
     }
 
     public void addLikeToFilmReview(Integer reviewId, Integer userId) {
@@ -147,6 +141,6 @@ public class ReviewService {
 
     private Review checkIfReviewExists(Integer reviewId) {
         return Optional.ofNullable(reviewStorage.getById(reviewId))
-                .orElseThrow(() -> new NotFoundException("Отзыв не обнаружен"));
+                .orElseThrow(() -> new EntryNotFoundException("Отзыв не обнаружен"));
     }
 }
