@@ -56,7 +56,7 @@ public class FilmController {
         return service.getListOfPopular(count);
     }
 
-    @GetMapping("/search")
+    @GetMapping(value = "/films//search")
     protected List<Film> searchFilms(@RequestParam(name = "query") Optional<String> query,
                                      @RequestParam(required = false, name = "by") List<String> by) {
         log.info("Запрос на поиск фильмов...");

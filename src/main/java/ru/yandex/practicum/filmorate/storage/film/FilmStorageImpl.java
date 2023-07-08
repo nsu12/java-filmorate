@@ -216,7 +216,7 @@ public class FilmStorageImpl implements FilmStorage {
                 "ORDER BY f.id DESC;";
         if (by != null) {
             log.debug("Запрос с параметром by");
-            if (by.size() == 1 & by.contains("name")) {
+            if (by.size() == 1 & by.contains("title")) {
                 log.debug("Запрос на поиск фильма по названию");
                 return getSearchedFilms(searchFilmSqlByName, stringInSql);
             }
@@ -224,7 +224,7 @@ public class FilmStorageImpl implements FilmStorage {
                 log.debug("Запрос на поиск фильма по режиссеру");
                 return getSearchedFilms(searchFilmSqlByDirector, stringInSql);
             }
-            if (by.size() == 2 & by.contains("name") & by.contains("director")) {
+            if (by.size() == 2 & by.contains("title") & by.contains("director")) {
                 log.debug("Запрос на поиск фильма по режиссеру и названию");
                 searchedFilms = jdbcTemplate.query(searchFilmSqlByAll, (rs, rowNum) -> makeFilm(rs,rowNum), stringInSql,
                         stringInSql);
