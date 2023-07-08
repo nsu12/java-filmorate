@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.exception;
 
-public class ReviewValidationException extends RuntimeException {
+import javax.validation.ValidationException;
+
+public class ReviewValidationException extends ValidationException {
 
     public ReviewValidationException(String message) {
         super(message);
