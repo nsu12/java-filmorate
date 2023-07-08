@@ -66,6 +66,7 @@ public class UserService {
     }
 
     public Collection<User> getUserFriends(long userId) {
+        storage.getOrThrow(userId); // check user presence
         return friendshipStorage.getUserFriendsOrThrow(userId);
     }
 
@@ -75,5 +76,9 @@ public class UserService {
         return userFriends.stream()
                 .filter(otherUserFriends::contains)
                 .collect(Collectors.toList());
+    }
+
+    public void delete(Long id) {
+        storage.deleteOrThrow(id);
     }
 }
