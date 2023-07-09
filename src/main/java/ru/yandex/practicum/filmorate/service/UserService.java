@@ -74,6 +74,7 @@ public class UserService {
         storage.getOrThrow(userId); // check user presence
         return friendshipStorage.getUserFriendsOrThrow(userId);
     }
+
     public Collection<User> getCommonFriendsForUsers(long userId, long otherId) {
         final var userFriends = friendshipStorage.getUserFriendsOrThrow(userId);
         final var otherUserFriends = friendshipStorage.getUserFriendsOrThrow(otherId);
