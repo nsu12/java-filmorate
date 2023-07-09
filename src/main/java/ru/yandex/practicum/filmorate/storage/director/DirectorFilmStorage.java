@@ -1,15 +1,16 @@
 package ru.yandex.practicum.filmorate.storage.director;
 
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
-import java.util.Set;
 
 public interface DirectorFilmStorage {
-    List<Director> getDirectorFilmOrThrow(long id);
+    List<Director> getFilmDirectorsOrThrow(long id);
 
     void removeDirectorFromFilmOrThrow(long id, long id1);
 
     void addDirectorFromFilmOrThrow(long directorId, long filmId);
 
+    List<Film> getFilmOfDirectorSortedBy(Long id, String value);
 }

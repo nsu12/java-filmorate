@@ -137,7 +137,7 @@ public class FilmStorageImpl implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, count);
     }
 
-    private static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
+    public static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         Film film = new Film();
         film.setId(rs.getLong("id"));
         film.setName(rs.getString("name"));

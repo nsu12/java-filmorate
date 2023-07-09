@@ -17,6 +17,7 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,6 +36,7 @@ public class FilmService {
     public Collection<Film> getAllFilms() {
         var films = filmStorage.getAll();
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
+        films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
         return films;
     }
 
@@ -45,13 +47,14 @@ public class FilmService {
         film.getDirectors().forEach(director -> directorFilmStorage.addDirectorFromFilmOrThrow(director.getId(),filmCreated.getId()));
         filmCreated.setGenres(filmGenreStorage.getFilmGenresOrThrow(filmCreated.getId()));
         filmCreated.clearDirectors();
-        filmCreated.setDirectors(directorFilmStorage.getDirectorFilmOrThrow(filmCreated.getId()));
+        filmCreated.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(filmCreated.getId()));
         return filmCreated;
     }
 
     public Film getById(long id) {
         Film film = filmStorage.getOrThrow(id);
         film.setGenres(filmGenreStorage.getFilmGenresOrThrow(id));
+        film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(id));
         return film;
     }
 
@@ -72,7 +75,7 @@ public class FilmService {
         // update genres names in film
         film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId()));
 
-        var oldDirectors = directorFilmStorage.getDirectorFilmOrThrow(film.getId());
+        var oldDirectors = directorFilmStorage.getFilmDirectorsOrThrow(film.getId());
         oldDirectors.stream()
                 .filter(director -> !film.getDirectors().contains(director))
                 .collect(Collectors.toList())
@@ -82,7 +85,7 @@ public class FilmService {
                 .collect(Collectors.toList())
                 .forEach(director -> directorFilmStorage.addDirectorFromFilmOrThrow(director.getId(),film.getId()));
         film.clearDirectors();
-        film.setDirectors(directorFilmStorage.getDirectorFilmOrThrow(film.getId()));
+        film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId()));
 
         return film;
     }
@@ -111,5 +114,10 @@ public class FilmService {
 
     public Collection<Film> getListOfPopular(int count) {
         return filmStorage.getPopularFilms(count);
+    }
+
+    public Collection<Film> getListFilmOfDirectorSortedBy(Long id ,String value) {
+        List <Film> films = directorFilmStorage.getFilmOfDirectorSortedBy(id,value);
+        return films;
     }
 }
