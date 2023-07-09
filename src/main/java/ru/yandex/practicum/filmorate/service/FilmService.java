@@ -3,11 +3,11 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.director.DirectorFilmStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.FilmGenreStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikesStorage;
@@ -30,6 +30,8 @@ public class FilmService {
     private final UserStorage userStorage;
     private final FilmGenreStorage filmGenreStorage;
     private final LikesStorage filmLikesStorage;
+
+    private final DirectorStorage directorStorage;
 
     private final DirectorFilmStorage directorFilmStorage;
 
@@ -116,8 +118,11 @@ public class FilmService {
         return filmStorage.getPopularFilms(count);
     }
 
-    public Collection<Film> getListFilmOfDirectorSortedBy(Long id ,String value) {
-        List <Film> films = directorFilmStorage.getFilmOfDirectorSortedBy(id,value);
+    public Collection<Film> getListFilmOfDirectorSortedBy(Long id, String value) {
+        directorStorage.getById(id);
+        List<Film> films = directorFilmStorage.getFilmOfDirectorSortedBy(id, value);
+        films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
+        films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
         return films;
     }
 }
