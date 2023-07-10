@@ -55,10 +55,10 @@ public class FilmStorageImpl implements FilmStorage {
     public Film getOrThrow(long id) {
         final String sqlQuery =
                 "SELECT " +
-                "   f.id, f.name, f.description, f.release_date, f.duration, f.rating_id, mr.name AS rating_name " +
-                "FROM film AS f " +
-                "JOIN mpa_rating AS mr ON f.rating_id = mr.id " +
-                "WHERE f.id = ?";
+                 "   f.id, f.name, f.description, f.release_date, f.duration, f.rating_id, mr.name AS rating_name " +
+                 "FROM film AS f " +
+                 "JOIN mpa_rating AS mr ON f.rating_id = mr.id " +
+                 "WHERE f.id = ?";
         final List<Film> films = jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, id);
 
         if (films.isEmpty()) {
@@ -76,8 +76,8 @@ public class FilmStorageImpl implements FilmStorage {
     public Collection<Film> getAll() {
         return jdbcTemplate.query(
                 "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id, mr.name AS rating_name " +
-                "FROM film AS f " +
-                "JOIN mpa_rating AS mr ON f.rating_id = mr.id",
+                 "FROM film AS f " +
+                 "JOIN mpa_rating AS mr ON f.rating_id = mr.id",
                 FilmStorageImpl::makeFilm);
     }
 
@@ -85,8 +85,8 @@ public class FilmStorageImpl implements FilmStorage {
     public void updateOrThrow(Film film) {
         String sqlQuery =
                 "UPDATE film " +
-                "SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? " +
-                "WHERE id = ?";
+                        "SET name = ?, description = ?, release_date = ?, duration = ?, rating_id = ? " +
+                        "WHERE id = ?";
         int numUpdated = jdbcTemplate.update(
                 sqlQuery,
                 film.getName(),
@@ -120,28 +120,100 @@ public class FilmStorageImpl implements FilmStorage {
     public Collection<Film> getPopularFilms(int count) {
         final String sqlQuery =
                 "SELECT f.id, " +
-                "   f.name," +
-                "   f.description," +
-                "   f.release_date, " +
-                "   f.duration, " +
-                "   f.rating_id, " +
-                "   mr.name AS rating_name, " +
-                "   sq.likes_count " +
-                "FROM film AS f " +
-                "JOIN mpa_rating AS mr ON f.rating_id = mr.id " +
-                "LEFT JOIN (" +
-                "       SELECT film_id, COUNT(film_id) AS likes_count" +
-                "       FROM favorite_films" +
-                "       GROUP BY film_id) AS sq ON sq.film_id = f.id " +
-                "ORDER BY sq.likes_count DESC " +
-                "LIMIT ?";
+                        "   f.name," +
+                        "   f.description," +
+                        "   f.release_date, " +
+                        "   f.duration, " +
+                        "   f.rating_id, " +
+                        "   mr.name AS rating_name, " +
+                        "   sq.likes_count " +
+                        "FROM film AS f " +
+                        "JOIN mpa_rating AS mr ON f.rating_id = mr.id " +
+                        "LEFT JOIN (" +
+                        "       SELECT film_id, COUNT(film_id) AS likes_count" +
+                        "       FROM favorite_films" +
+                        "       GROUP BY film_id) AS sq ON sq.film_id = f.id " +
+                        "ORDER BY sq.likes_count DESC " +
+                        "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, count);
     }
 
-      @Override
+    @Override
+    public Collection<Film> getPopularFilmsByGenre(int count, Long genreId) {
+        final String sqlQuery =
+                "SELECT f.id, " +
+                        "   f.name," +
+                        "   f.description," +
+                        "   f.release_date, " +
+                        "   f.duration, " +
+                        "   f.rating_id, " +
+                        "   mr.name AS rating_name, " +
+                        "   sq.likes_count " +
+                        "FROM film AS f " +
+                        "JOIN film_genre AS fg ON fg.film_id = f.id " +
+                        "JOIN mpa_rating AS mr ON f.rating_id = mr.id " +
+                        "LEFT JOIN (" +
+                        "       SELECT film_id, COUNT(film_id) AS likes_count" +
+                        "       FROM favorite_films" +
+                        "       GROUP BY film_id) AS sq ON sq.film_id = f.id " +
+                        "WHERE fg.genre_id = ? " +
+                        "ORDER BY sq.likes_count DESC " +
+                        "LIMIT ?";
+        return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, count, genreId);
+    }
+
+    @Override
+    public Collection<Film> getPopularFilmsByYear(int count, Long year) {
+        final String sqlQuery =
+                "SELECT f.id, " +
+                        "   f.name," +
+                        "   f.description," +
+                        "   f.release_date, " +
+                        "   f.duration, " +
+                        "   f.rating_id, " +
+                        "   mr.name AS rating_name, " +
+                        "   sq.likes_count " +
+                        "FROM film AS f " +
+                        "JOIN mpa_rating AS mr ON f.rating_id = mr.id " +
+                        "LEFT JOIN (" +
+                        "       SELECT film_id, COUNT(film_id) AS likes_count" +
+                        "       FROM favorite_films" +
+                        "       GROUP BY film_id) AS sq ON sq.film_id = f.id " +
+                        "WHERE extract(year from release_date) = ? " +
+                        "ORDER BY sq.likes_count DESC " +
+                        "LIMIT ?";
+        return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, count, year);
+    }
+
+    @Override
+    public Collection<Film> getPopularFilmsByYearAndGenre(int count, Long year, Long genreId) {
+        final String sqlQuery =
+                "SELECT f.id, " +
+                        "   f.name," +
+                        "   f.description," +
+                        "   f.release_date, " +
+                        "   f.duration, " +
+                        "   f.rating_id, " +
+                        "   mr.name AS rating_name, " +
+                        "   sq.likes_count " +
+                        "FROM film AS f " +
+                        "JOIN mpa_rating AS mr ON f.rating_id = mr.id " +
+                        "JOIN film_genre AS fg ON fg.film_id = f.id " +
+                        "LEFT JOIN (" +
+                        "       SELECT film_id, COUNT(film_id) AS likes_count" +
+                        "       FROM favorite_films" +
+                        "       GROUP BY film_id) AS sq ON sq.film_id = f.id " +
+                        "WHERE extract(year from release_date) = ? " +
+                        "AND fg.genre_id = ? " +
+                        "ORDER BY sq.likes_count DESC " +
+                        "LIMIT ?";
+        return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, count, year, genreId);
+    }
+
+    @Override
     public Collection<Film> getCommonFilmsSortedByPopularity(long user1Id, long user2Id) {
         final String sqlQuery =
-                        "SELECT f.id, " +
+                "SELECT f.id, " +
                         "   f.name," +
                         "   f.description," +
                         "   f.release_date, " +
@@ -228,16 +300,5 @@ public class FilmStorageImpl implements FilmStorage {
 
     private Long mapRowToFilmId(ResultSet resultSet, int rowNum) throws SQLException {
         return resultSet.getLong("film_id");
-    }
-
-    @Override
-    public List<Film> findFilmsByGenre(Long genreId) {
-        String sqlQuerry = "select film_id from film_genre where genre_id = ?";
-        List<Long> filmsId = jdbcTemplate.query(sqlQuerry, this::mapRowToFilmId, genreId);
-        List<Film> films = new ArrayList<>();
-        for (Long filmId : filmsId) {
-            films.add(getOrThrow(filmId));
-        }
-        return films;
     }
 }

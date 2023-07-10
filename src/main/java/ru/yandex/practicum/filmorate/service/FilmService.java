@@ -128,35 +128,22 @@ public class FilmService {
     public Collection<Film> getListOfPopular(Integer count, Long genreId, Long year) {
         Set<Film> films = new HashSet<>();
         if (genreId != 0 && year != 0) {
-            for (Film film : findFilmByGenre(genreId)) {
-                if (film.getReleaseDate().getYear() == year) {
-                    films.add(film);
-                }
-            }
-            for (Film film : findFilmByYear(year)) {
-                for (Genre genre : film.getGenres()) {
-                    if (genre.getId() == genreId) {
-                        films.add(film);
-                    }
-                }
-            }
+            Collection<Film> film = filmStorage.getPopularFilmsByYearAndGenre(count, year, genreId);
+            films.addAll(film);
         } else if (genreId != 0 && year == 0) {
-            films.addAll(findFilmByGenre(genreId));
-
+            Collection<Film> film = filmStorage.getPopularFilmsByGenre(count, genreId);
+            films.addAll(film);
         } else if (genreId == 0 && year != 0) {
-            films.addAll(findFilmByYear(year));
-
+            Collection<Film> film = filmStorage.getPopularFilmsByYear(count, year);
+            films.addAll(film);
         } else {
-            films.addAll(getAllFilms());
+            films.addAll(filmStorage.getPopularFilms(count));
         }
 
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
 
-        return films
-                .stream()
-                .limit(count)
-                .collect(Collectors.toList());
+        return films;
     }
 
     public Collection<Film> getListOfCommon(long userId, long friendId) {
@@ -187,9 +174,5 @@ public class FilmService {
             }
         }
         return films;
-    }
-
-    private List<Film> findFilmByGenre(Long genreId) {
-        return filmStorage.findFilmsByGenre(genreId);
     }
 }
