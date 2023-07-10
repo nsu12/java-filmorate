@@ -28,14 +28,14 @@ public class EventService {
                         .timestamp(Instant.now().toEpochMilli())
                         .build()
         );
-        log.info("Добавлено событие {} для пользователя {}: {} {}",
+        log.debug("Добавлено событие {} для пользователя {}: {} {}",
                 type.toString(), userId, operation.toString(), entityId);
     }
 
     public Collection<Event> getAllByUserId(long userId) {
         userStorage.getOrThrow(userId);
         var events = eventStorage.getAllForUserOrThrow(userId);
-        log.info("Получено {} событий для пользователя {}", events.size(), userId);
+        log.debug("Получено {} событий для пользователя {}", events.size(), userId);
         return events;
     }
 }

@@ -83,28 +83,24 @@ public class ReviewService {
         log.debug("Добавление лайка отзыву с id = {} от пользователя с id = {}", reviewId, userId);
         changeUserReviewReaction(reviewId, userId, true);
         log.debug("Лайк добавлен");
-        eventService.createEvent(userId, EventType.LIKE, EventOperation.ADD, reviewId);
     }
 
     public void addDislikeToFilmReview(Integer reviewId, Integer userId) {
         log.debug("Добавление дизлайка отзыву с id = {} от пользователя с id = {}", reviewId, userId);
         changeUserReviewReaction(reviewId, userId, false);
         log.debug("Дизлайк добавлен");
-        eventService.createEvent(userId, EventType.LIKE, EventOperation.ADD, reviewId);
     }
 
     public void deleteLikeFromFilmReview(Integer reviewId, Integer userId) {
         log.debug("Удаление лайка к отзыву с id = {} от пользователя с id = {}", reviewId, userId);
         clearUserReviewReaction(reviewId, userId, true);
         log.debug("Выполнено");
-        eventService.createEvent(userId, EventType.LIKE, EventOperation.REMOVE, reviewId);
     }
 
     public void deleteDislikeFromFilmReview(Integer reviewId, Integer userId) {
         log.debug("Удаление дизлайка к отзыву с id = {} от пользователя с id = {}", reviewId, userId);
         clearUserReviewReaction(reviewId, userId, false);
         log.debug("Выполнено");
-        eventService.createEvent(userId, EventType.LIKE, EventOperation.REMOVE, reviewId);
     }
 
     private void changeUserReviewReaction(Integer reviewId, Integer userId, boolean isPositive) {
