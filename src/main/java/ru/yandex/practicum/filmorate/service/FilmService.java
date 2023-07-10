@@ -18,7 +18,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -142,7 +141,10 @@ public class FilmService {
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
 
-        return films;
+        return films
+                .stream()
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     public Collection<Film> getListOfCommon(long userId, long friendId) {

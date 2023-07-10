@@ -150,16 +150,18 @@ public class FilmStorageImpl implements FilmStorage {
                         "   mr.name AS rating_name, " +
                         "   sq.likes_count " +
                         "FROM film AS f " +
-                        "JOIN film_genre AS fg ON fg.film_id = f.id " +
                         "JOIN mpa_rating AS mr ON f.rating_id = mr.id " +
                         "LEFT JOIN (" +
                         "       SELECT film_id, COUNT(film_id) AS likes_count" +
                         "       FROM favorite_films" +
                         "       GROUP BY film_id) AS sq ON sq.film_id = f.id " +
-                        "WHERE fg.genre_id = ? " +
+                        "WHERE  f.id IN (" +
+                        "        select film_id " +
+                        "        from film_genre " +
+                        "WHERE genre_id = ?) " +
                         "ORDER BY sq.likes_count DESC " +
                         "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, count, genreId);
+        return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, genreId, count);
     }
 
     @Override
@@ -179,10 +181,10 @@ public class FilmStorageImpl implements FilmStorage {
                         "       SELECT film_id, COUNT(film_id) AS likes_count" +
                         "       FROM favorite_films" +
                         "       GROUP BY film_id) AS sq ON sq.film_id = f.id " +
-                        "WHERE extract(year from release_date) = ? " +
+                        "WHERE YEAR(f.release_date) = ? " +
                         "ORDER BY sq.likes_count DESC " +
                         "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, count, year);
+        return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, year, count);
     }
 
     @Override
@@ -203,11 +205,11 @@ public class FilmStorageImpl implements FilmStorage {
                         "       SELECT film_id, COUNT(film_id) AS likes_count" +
                         "       FROM favorite_films" +
                         "       GROUP BY film_id) AS sq ON sq.film_id = f.id " +
-                        "WHERE extract(year from release_date) = ? " +
+                        "WHERE YEAR(f.release_date) = ? " +
                         "AND fg.genre_id = ? " +
                         "ORDER BY sq.likes_count DESC " +
                         "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, count, year, genreId);
+        return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, year, genreId, count);
     }
 
     @Override
