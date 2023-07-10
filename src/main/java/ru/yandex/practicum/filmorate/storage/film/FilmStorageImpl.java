@@ -138,7 +138,7 @@ public class FilmStorageImpl implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, count);
     }
 
-    @Override
+      @Override
     public Collection<Film> getCommonFilmsSortedByPopularity(long user1Id, long user2Id) {
         final String sqlQuery =
                         "SELECT f.id, " +
@@ -162,17 +162,6 @@ public class FilmStorageImpl implements FilmStorage {
                         "       HAVING COUNT(film_id) = 2) " +
                         "ORDER BY sq.likes_count DESC ";
         return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, user1Id, user2Id);
-    }
-
-    private static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
-        Film film = new Film();
-        film.setId(rs.getLong("id"));
-        film.setName(rs.getString("name"));
-        film.setDescription(rs.getString("description"));
-        film.setReleaseDate(rs.getDate("release_date").toLocalDate());
-        film.setDuration(rs.getInt("duration"));
-        film.setMpa(new MpaRating(rs.getLong("rating_id"), rs.getString("rating_name")));
-        return film;
     }
 
     @Override
@@ -215,6 +204,17 @@ public class FilmStorageImpl implements FilmStorage {
             }
         }
         return recommendations;
+    }
+
+    public static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
+        Film film = new Film();
+        film.setId(rs.getLong("id"));
+        film.setName(rs.getString("name"));
+        film.setDescription(rs.getString("description"));
+        film.setReleaseDate(rs.getDate("release_date").toLocalDate());
+        film.setDuration(rs.getInt("duration"));
+        film.setMpa(new MpaRating(rs.getLong("rating_id"), rs.getString("rating_name")));
+        return film;
     }
 
     private Long mapRowToUserIdWhoStayLike(ResultSet resultSet, int rowNum) throws SQLException {
