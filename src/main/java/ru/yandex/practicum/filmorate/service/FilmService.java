@@ -7,7 +7,6 @@ import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.director.DirectorFilmStorage;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
@@ -163,16 +162,6 @@ public class FilmService {
         List<Film> films = directorFilmStorage.getFilmOfDirectorSortedBy(id, value);
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
-        return films;
-    }
-
-    private List<Film> findFilmByYear(Long year) {
-        List<Film> films = new ArrayList<>();
-        for (Film film : filmStorage.getAll()) {
-            if (film.getReleaseDate().getYear() == year) {
-                films.add(film);
-            }
-        }
         return films;
     }
 }
