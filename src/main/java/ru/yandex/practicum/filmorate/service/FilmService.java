@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.director.DirectorFilmStorage;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
@@ -18,8 +19,11 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -121,10 +125,38 @@ public class FilmService {
         eventService.createEvent(userId, EventType.LIKE, EventOperation.REMOVE, filmId);
     }
 
-    public Collection<Film> getListOfPopular(int count) {
-        final var films = filmStorage.getPopularFilms(count);
+    public Collection<Film> getListOfPopular(Integer count, Long genreId, Long year) {
+        Set<Film> films = new HashSet<>();
+        if (genreId != 0 && year != 0) {
+            for (Film film : findFilmByGenre(genreId)) {
+                if (film.getReleaseDate().getYear() == year) {
+                    films.add(film);
+                }
+            }
+            for (Film film : findFilmByYear(year)) {
+                for (Genre genre : film.getGenres()) {
+                    if (genre.getId() == genreId) {
+                        films.add(film);
+                    }
+                }
+            }
+        } else if (genreId != 0 && year == 0) {
+            films.addAll(findFilmByGenre(genreId));
+
+        } else if (genreId == 0 && year != 0) {
+            films.addAll(findFilmByYear(year));
+
+        } else {
+            films.addAll(getAllFilms());
+        }
+
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
-        return films;
+        films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
+
+        return films
+                .stream()
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     public Collection<Film> getListOfCommon(long userId, long friendId) {
@@ -145,5 +177,19 @@ public class FilmService {
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
         return films;
+    }
+
+    private List<Film> findFilmByYear(Long year) {
+        List<Film> films = new ArrayList<>();
+        for (Film film : filmStorage.getAll()) {
+            if (film.getReleaseDate().getYear() == year) {
+                films.add(film);
+            }
+        }
+        return films;
+    }
+
+    private List<Film> findFilmByGenre(Long genreId) {
+        return filmStorage.findFilmsByGenre(genreId);
     }
 }

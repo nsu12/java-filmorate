@@ -229,4 +229,15 @@ public class FilmStorageImpl implements FilmStorage {
     private Long mapRowToFilmId(ResultSet resultSet, int rowNum) throws SQLException {
         return resultSet.getLong("film_id");
     }
+
+    @Override
+    public List<Film> findFilmsByGenre(Long genreId) {
+        String sqlQuerry = "select film_id from film_genre where genre_id = ?";
+        List<Long> filmsId = jdbcTemplate.query(sqlQuerry, this::mapRowToFilmId, genreId);
+        List<Film> films = new ArrayList<>();
+        for (Long filmId : filmsId) {
+            films.add(getOrThrow(filmId));
+        }
+        return films;
+    }
 }
