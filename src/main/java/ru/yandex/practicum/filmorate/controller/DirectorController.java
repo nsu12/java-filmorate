@@ -11,7 +11,6 @@ import java.util.Collection;
 @Slf4j
 @RestController
 @RequestMapping
-
 public class DirectorController {
     private final DirectorService service;
 
@@ -23,6 +22,7 @@ public class DirectorController {
     public Director create(@RequestBody @Valid Director director) {
         return service.create(director);
     }
+
     @PutMapping(value = "/directors")
     public Director update(@RequestBody @Valid Director director) {
         return service.update(director);

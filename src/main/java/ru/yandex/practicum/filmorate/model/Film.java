@@ -32,7 +32,7 @@ public class Film {
         genres.addAll(listOfGenres);
     }
 
-    public void setDirectors(List<Director> listOfDirectors){
+    public void setDirectors(List<Director> listOfDirectors) {
         directors.addAll(listOfDirectors);
     }
 
