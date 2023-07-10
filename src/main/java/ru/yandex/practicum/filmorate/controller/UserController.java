@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -13,14 +14,11 @@ import java.util.Collection;
 @Slf4j
 @RestController
 @RequestMapping(value = "/users")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final FilmService filmService;
-
-    public UserController(UserService userService, FilmService filmService) {
-        this.userService = userService;
-        this.filmService = filmService;
-    }
+    private final EventService eventService;
 
     @GetMapping
     public Collection<User> getAllUsers() {
@@ -74,5 +72,12 @@ public class UserController {
             @PathVariable("id") Long userId
     ) {
         return filmService.getRecommendedFilms(userId);
+    }
+
+    @GetMapping(value = "/{id}/feed")
+    public Collection<Event> getFeed(
+            @PathVariable("id") Long userId
+    ) {
+        return eventService.getAllByUserId(userId);
     }
 }

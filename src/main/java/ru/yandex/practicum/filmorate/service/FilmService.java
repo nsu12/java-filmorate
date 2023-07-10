@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import ru.yandex.practicum.filmorate.model.EventOperation;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.director.DirectorFilmStorage;
@@ -30,9 +32,8 @@ public class FilmService {
     private final UserStorage userStorage;
     private final FilmGenreStorage filmGenreStorage;
     private final LikesStorage filmLikesStorage;
-
+    private final EventService eventService;
     private final DirectorStorage directorStorage;
-
     private final DirectorFilmStorage directorFilmStorage;
 
     public Collection<Film> getAllFilms() {
@@ -108,14 +109,16 @@ public class FilmService {
         final Film film = filmStorage.getOrThrow(filmId);
         final User user = userStorage.getOrThrow(userId);
         filmLikesStorage.addLikeToFilmOrThrow(userId, filmId);
-        log.info("Film '{}' liked by user '{}'", film.getName(), user.getLogin());
+        log.debug("Film '{}' liked by user '{}'", film.getName(), user.getLogin());
+        eventService.createEvent(userId, EventType.LIKE, EventOperation.ADD, filmId);
     }
 
     public void removeLikeFromUser(long filmId, long userId) {
         final Film film = filmStorage.getOrThrow(filmId);
         final User user = userStorage.getOrThrow(userId);
         filmLikesStorage.removeLikeFromFilmOrThrow(userId, filmId);
-        log.info("User '{}' remove like from film '{}'", user.getName(), film.getName());
+        log.debug("User '{}' remove like from film '{}'", user.getName(), film.getName());
+        eventService.createEvent(userId, EventType.LIKE, EventOperation.REMOVE, filmId);
     }
 
     public Collection<Film> getListOfPopular(int count) {
