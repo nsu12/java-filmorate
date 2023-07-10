@@ -10,10 +10,10 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorageImpl;
 
 import java.security.InvalidParameterException;
 import java.util.List;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
-
 public class DirectorFilmStorageImpl implements DirectorFilmStorage {
     private final JdbcTemplate jdbcTemplate;
 
@@ -58,9 +58,7 @@ public class DirectorFilmStorageImpl implements DirectorFilmStorage {
                         "    WHERE director_id = ?\n" +
                         "    )\n" +
                         "ORDER BY sq.likes_count DESC;";
-                var x = jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, id);
-
-                return x;
+                return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, id);
             }
             case "year": {
                 final String sqlQuery = "SELECT f.id,\n" +
@@ -69,16 +67,15 @@ public class DirectorFilmStorageImpl implements DirectorFilmStorage {
                         "       f.release_date,\n" +
                         "       f.duration,\n" +
                         "       f.rating_id,\n" +
-                        "       mr.name AS rating_name,\n" +
+                        "       mr.name AS rating_name\n" +
                         "FROM film AS f\n" +
                         "JOIN mpa_rating AS mr ON f.rating_id = mr.id\n" +
                         "WHERE f.id IN (\n" +
                         "    SELECT film_id FROM director_film\n" +
                         "    WHERE director_id = ?\n" +
                         "    )\n" +
-                        "ORDER BY YEAR(f.release_date) ASC;";
-                var x = jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, id);
-                return x;
+                        "ORDER BY YEAR(f.release_date);";
+                return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, id);
             }
             default:
                 throw new InvalidParameterException("Не правильно указан ключ сортировки SortBylike = " + value);// поменять

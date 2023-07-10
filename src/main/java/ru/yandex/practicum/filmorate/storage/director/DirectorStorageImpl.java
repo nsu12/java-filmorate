@@ -9,7 +9,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntryNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorageImpl;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,9 +20,10 @@ import java.util.Objects;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class DirectorStorageImpl implements DirectorStorage{
+public class DirectorStorageImpl implements DirectorStorage {
 
-    JdbcTemplate jdbcTemplate ;
+    JdbcTemplate jdbcTemplate;
+
     @Autowired
     public DirectorStorageImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -48,8 +48,9 @@ public class DirectorStorageImpl implements DirectorStorage{
 
         return director;
     }
+
     @Override
-    public Director update(Director director){
+    public Director update(Director director) {
         String sqlQuery =
                 "UPDATE director " +
                         "SET name = ? " +
@@ -93,10 +94,7 @@ public class DirectorStorageImpl implements DirectorStorage{
 
     @Override
     public Collection<Director> getAll() {
-        return jdbcTemplate.query(
-                "SELECT * " +
-                        "FROM director" ,
-                DirectorStorageImpl::makeDirector);
+        return jdbcTemplate.query("SELECT * FROM director", DirectorStorageImpl::makeDirector);
     }
 
     @Override
@@ -114,5 +112,4 @@ public class DirectorStorageImpl implements DirectorStorage{
         director.setName(rs.getString("name"));
         return director;
     }
-
 }

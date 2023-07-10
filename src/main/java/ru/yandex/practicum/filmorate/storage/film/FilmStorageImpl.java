@@ -137,7 +137,7 @@ public class FilmStorageImpl implements FilmStorage {
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, count);
     }
-  
+
       @Override
     public Collection<Film> getCommonFilmsSortedByPopularity(long user1Id, long user2Id) {
         final String sqlQuery =
@@ -205,7 +205,7 @@ public class FilmStorageImpl implements FilmStorage {
         }
         return recommendations;
     }
-  
+
     public static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         Film film = new Film();
         film.setId(rs.getLong("id"));
