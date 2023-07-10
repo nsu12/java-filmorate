@@ -20,7 +20,7 @@ public interface FilmStorage {
      */
     Film getOrThrow(long id);
 
-    /**
+   /**
      * Получение списка всех фильмов
      * @return список всех фильмов
      */
@@ -37,7 +37,28 @@ public interface FilmStorage {
      * Удаляет фильм из хранилища
      * @param id фильма
      */
-    void removeOrThrow(long id);
+    void deleteOrThrow(long id);
 
+    /**
+     * Возвращает список заданного количества самых популярных фильмов,
+     * отсортированных по популярности (количеству лайков)
+     * @param count количество фильмов для вывода
+     * @return список фильмов
+     */
     Collection<Film> getPopularFilms(int count);
+
+   /**
+     * Возвращает список рекомендованных пользователем фильмов
+     * @param userId идентификатор пользователя
+     * @return список фильмов
+     */
+    Collection<Film> getRecommendedFilms(long userId);
+
+   /**
+     * Возвращает список общих для обоих пользователей фильмов, отсортированных по популярности (количеству лайков)
+     * @param user1Id идентификатор пользователя 1
+     * @param user2Id идентификатор пользователя 2
+     * @return список фильмов
+     */
+    Collection<Film> getCommonFilmsSortedByPopularity(long user1Id, long user2Id);
 }
