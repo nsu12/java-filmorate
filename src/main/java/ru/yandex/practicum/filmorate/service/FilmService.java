@@ -3,12 +3,13 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.EventOperation;
 import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.director.DirectorFilmStorage;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.FilmGenreStorage;
 import ru.yandex.practicum.filmorate.storage.likes.LikesStorage;
@@ -18,6 +19,7 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,12 +32,14 @@ public class FilmService {
     private final UserStorage userStorage;
     private final FilmGenreStorage filmGenreStorage;
     private final LikesStorage filmLikesStorage;
-
     private final EventService eventService;
+    private final DirectorStorage directorStorage;
+    private final DirectorFilmStorage directorFilmStorage;
 
     public Collection<Film> getAllFilms() {
         var films = filmStorage.getAll();
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
+        films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
         return films;
     }
 
@@ -43,13 +47,17 @@ public class FilmService {
         validateReleaseDate(film);
         Film filmCreated = filmStorage.addOrThrow(film);
         film.getGenres().forEach(genre -> filmGenreStorage.addGenreToFilmOrThrow(genre.getId(), filmCreated.getId()));
+        film.getDirectors().forEach(director -> directorFilmStorage.addDirectorFromFilmOrThrow(director.getId(),filmCreated.getId()));
         filmCreated.setGenres(filmGenreStorage.getFilmGenresOrThrow(filmCreated.getId()));
+        filmCreated.clearDirectors();
+        filmCreated.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(filmCreated.getId()));
         return filmCreated;
     }
 
     public Film getById(long id) {
         Film film = filmStorage.getOrThrow(id);
         film.setGenres(filmGenreStorage.getFilmGenresOrThrow(id));
+        film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(id));
         return film;
     }
 
@@ -69,6 +77,19 @@ public class FilmService {
                 .forEach(genre -> filmGenreStorage.addGenreToFilmOrThrow(genre.getId(), film.getId()));
         // update genres names in film
         film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId()));
+
+        var oldDirectors = directorFilmStorage.getFilmDirectorsOrThrow(film.getId());
+        oldDirectors.stream()
+                .filter(director -> !film.getDirectors().contains(director))
+                .collect(Collectors.toList())
+                .forEach(director -> directorFilmStorage.removeDirectorFromFilmOrThrow(director.getId(),film.getId()));
+        film.getDirectors().stream()
+                .filter(director -> !oldDirectors.contains(director))
+                .collect(Collectors.toList())
+                .forEach(director -> directorFilmStorage.addDirectorFromFilmOrThrow(director.getId(),film.getId()));
+        film.clearDirectors();
+        film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId()));
+
         return film;
     }
 
@@ -115,6 +136,14 @@ public class FilmService {
     public Collection<Film> getRecommendedFilms(long id) {
         var films = filmStorage.getRecommendedFilms(id);
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
+        return films;
+    }
+
+    public Collection<Film> getListFilmOfDirectorSortedBy(Long id, String value) {
+        directorStorage.getById(id);
+        List<Film> films = directorFilmStorage.getFilmOfDirectorSortedBy(id, value);
+        films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
+        films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
         return films;
     }
 }
