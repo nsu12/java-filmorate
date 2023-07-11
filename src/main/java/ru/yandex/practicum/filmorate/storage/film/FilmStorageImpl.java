@@ -21,9 +21,7 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 public class FilmStorageImpl implements FilmStorage {
-
-
-    private final String GET_SEARCH_FILMS_BY_NAME = "SELECT f.*, rm.name AS rating_name, " +
+    private final String getSearchFilmsByName = "SELECT f.*, rm.name AS rating_name, " +
             "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
             "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
             "FROM (" +
@@ -46,7 +44,7 @@ public class FilmStorageImpl implements FilmStorage {
             "GROUP BY f.id " +
             "ORDER BY f.id DESC";
 
-    private final String GET_SEARCH_FILMS_BY_DIRECTOR = "SELECT f.*, rm.name AS rating_name, " +
+    private final String getSearchFilmsByDirector = "SELECT f.*, rm.name AS rating_name, " +
             "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
             "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
             "FROM (" +
@@ -69,7 +67,7 @@ public class FilmStorageImpl implements FilmStorage {
             "GROUP BY f.id " +
             "ORDER BY f.id DESC";
 
-    private final String GET_SEARCH_FILMS_BY_ALL = "SELECT f.*, rm.name AS rating_name, " +
+    private final String getSearchFilmsByAllG = "SELECT f.*, rm.name AS rating_name, " +
             "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
             "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
             "FROM (" +
@@ -296,15 +294,15 @@ public class FilmStorageImpl implements FilmStorage {
             log.debug("Получен запрос с параметром by");
             if (by.size() == 1 & by.contains("title")) {
                 log.debug("Получен запрос на поиск фильма по названию");
-                return getSearchedFilms(GET_SEARCH_FILMS_BY_NAME, stringInSql);
+                return getSearchedFilms(getSearchFilmsByName, stringInSql);
             }
             if (by.size() == 1 & by.contains("director")) {
                 log.debug("Получен запрос на поиск фильма по имени режиссера");
-                return getSearchedFilms(GET_SEARCH_FILMS_BY_DIRECTOR, stringInSql);
+                return getSearchedFilms(getSearchFilmsByDirector, stringInSql);
             }
             if (by.size() == 2 & by.contains("title") & by.contains("director")) {
                 log.debug("Получен запрос на поиск фильма по имени режиссера и по названию фильма");
-                searchedFilms = jdbcTemplate.query(GET_SEARCH_FILMS_BY_ALL, (rs, rowNum) -> makeFilm(rs,rowNum), stringInSql, stringInSql);
+                searchedFilms = jdbcTemplate.query(getSearchFilmsByAllG, (rs, rowNum) -> makeFilm(rs,rowNum), stringInSql, stringInSql);
                 log.debug("Результаты поиска:");
                 for (Film film : searchedFilms) {
                     log.debug("Фильм с film_id={}: {}", film.getId(), film);
@@ -315,7 +313,7 @@ public class FilmStorageImpl implements FilmStorage {
             }
         }
         log.debug("Получен запрос без параметра by, выполнен поиск по умолчанию");
-        return getSearchedFilms(GET_SEARCH_FILMS_BY_NAME, stringInSql);
+        return getSearchedFilms(getSearchFilmsByName, stringInSql);
     }
 
     private List<Film> getSearchedFilms(String sql, String stringInSql) {
