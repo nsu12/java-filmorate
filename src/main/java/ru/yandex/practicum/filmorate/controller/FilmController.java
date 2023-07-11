@@ -81,6 +81,6 @@ public class FilmController {
     protected List<Film> searchFilms(@RequestParam(name = "query") Optional<String> query,
                                      @RequestParam(required = false, name = "by") List<String> by) {
         log.info("Запрос на поиск фильмов...");
-        return service.searchFilms(query, by);
+        return (List<Film>) service.searchFilms(query, by);
     }
 }

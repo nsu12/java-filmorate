@@ -148,7 +148,10 @@ public class FilmService {
         return films;
     }
 
-    public List<Film> searchFilms(Optional<String> query, List<String> by) {
-        return filmStorage.searchFilms(query,by);
+    public Collection<Film> searchFilms(Optional<String> query, List<String> by) {
+        List<Film> films = filmStorage.searchFilms(query,by);
+        films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
+        films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
+        return films;
     }
 }
