@@ -10,7 +10,7 @@ import java.util.Collection;
 
 @Slf4j
 @RestController
-@RequestMapping(value="/directors")
+@RequestMapping(value = "/directors")
 public class DirectorController {
     private final DirectorService service;
 

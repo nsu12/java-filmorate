@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @AllArgsConstructor
-@RequestMapping("/reviews")
+@RequestMapping(value = "/reviews")
 public class ReviewController {
 
     ReviewService reviewService;
