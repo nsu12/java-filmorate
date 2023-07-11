@@ -108,7 +108,8 @@ public class FilmService {
     public void addLikeFromUser(long filmId, long userId) {
         final Film film = filmStorage.getOrThrow(filmId);
         final User user = userStorage.getOrThrow(userId);
-        filmLikesStorage.addLikeToFilmOrThrow(userId, filmId);
+        if (!filmLikesStorage.checkLikeIsExistsOrThrow(userId, filmId))
+            filmLikesStorage.addLikeToFilmOrThrow(userId, filmId);
         log.debug("Film '{}' liked by user '{}'", film.getName(), user.getLogin());
         eventService.createEvent(userId, EventType.LIKE, EventOperation.ADD, filmId);
     }
