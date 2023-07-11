@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -80,9 +79,10 @@ public class FilmController {
     }
 
     @GetMapping(value = "/search")
-    protected Collection<Film> searchFilms(@RequestParam(name = "query") Optional<String> query,
-                                     @RequestParam(required = false, name = "by") List<String> by) {
-        log.info("Запрос на поиск фильмов...");
+    protected Collection<Film> searchFilms(
+            @RequestParam(name = "query") String query,
+            @RequestParam(name = "by") List<String> by) {
+        log.debug("Запрос на поиск фильмов...");
         return service.searchFilms(query, by);
     }
 }

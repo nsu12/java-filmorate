@@ -10,7 +10,7 @@ import java.util.Collection;
 
 @Slf4j
 @RestController
-@RequestMapping
+@RequestMapping(value="/directors")
 public class DirectorController {
     private final DirectorService service;
 
@@ -18,27 +18,27 @@ public class DirectorController {
         this.service = service;
     }
 
-    @PostMapping(value = "/directors")
+    @PostMapping
     public Director create(@RequestBody @Valid Director director) {
         return service.create(director);
     }
 
-    @PutMapping(value = "/directors")
+    @PutMapping
     public Director update(@RequestBody @Valid Director director) {
         return service.update(director);
     }
 
-    @GetMapping(value = "/directors/{id}")
+    @GetMapping(value = "/{id}")
     public Director get(@PathVariable("id") Long id) {
         return service.get(id);
     }
 
-    @GetMapping(value = "/directors")
+    @GetMapping
     public Collection<Director> get() {
         return service.getAllDirectors();
     }
 
-    @DeleteMapping(value = "/directors/{id}")
+    @DeleteMapping(value = "/{id}")
     public void delete(@PathVariable("id") Long id) {
          service.delete(id);
     }

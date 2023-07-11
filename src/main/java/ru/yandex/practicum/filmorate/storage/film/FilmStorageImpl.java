@@ -358,12 +358,12 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public List<Film> searchFilms(Optional<String> query, List<String> by) {
+    public Collection<Film> searchFilms(String query, List<String> by) {
         List<Film> searchedFilms = new ArrayList<>();
-        if (query.get().isEmpty() || query.get().equals(" ")) {
+        if (query.isEmpty() || query.equals(" ")) {
             return searchedFilms;
         }
-        String stringInSql = "%" + query.get().toLowerCase() + "%";
+        String stringInSql = "%" + query.toLowerCase() + "%";
         if (by != null) {
             log.debug("Получен запрос с параметром by");
             if (by.size() == 1 & by.contains("title")) {
@@ -376,7 +376,7 @@ public class FilmStorageImpl implements FilmStorage {
             }
             if (by.size() == 2 & by.contains("title") & by.contains("director")) {
                 log.debug("Получен запрос на поиск фильма по имени режиссера и по названию фильма");
-                searchedFilms = jdbcTemplate.query(GET_SEARCH_FILMS_BY_ALL, (rs, rowNum) -> makeFilm(rs,rowNum), stringInSql, stringInSql);
+                searchedFilms = jdbcTemplate.query(GET_SEARCH_FILMS_BY_ALL, FilmStorageImpl::makeFilm, stringInSql, stringInSql);
                 log.debug("Результаты поиска:");
                 for (Film film : searchedFilms) {
                     log.debug("Фильм с film_id={}: {}", film.getId(), film);
@@ -391,7 +391,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     private List<Film> getSearchedFilms(String sql, String stringInSql) {
-        List<Film> searchedFilms = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs,rowNum), stringInSql);
+        List<Film> searchedFilms = jdbcTemplate.query(sql, FilmStorageImpl::makeFilm, stringInSql);
         log.debug("Результаты поиска:");
         for (Film film : searchedFilms) {
             log.debug("Фильм с film_id={}: {}", film.getId(), film);

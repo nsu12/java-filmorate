@@ -20,7 +20,6 @@ import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -162,8 +161,8 @@ public class FilmService {
         return films;
     }
 
-    public Collection<Film> searchFilms(Optional<String> query, List<String> by) {
-        List<Film> films = filmStorage.searchFilms(query,by);
+    public Collection<Film> searchFilms(String query, List<String> by) {
+        Collection<Film> films = filmStorage.searchFilms(query, by);
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
         return films;

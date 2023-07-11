@@ -25,6 +25,15 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
+        log.error("Некорректные параметры запроса, {}", e.getMessage());
+        return new ErrorResponse(
+                e.getMessage()
+        );
+    }
+
+    @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleEntryNotFoundException(final EntryNotFoundException e) {
         log.error(e.getMessage());
