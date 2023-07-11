@@ -35,8 +35,8 @@ public class DirectorFilmStorageImpl implements DirectorFilmStorage {
     }
 
     @Override
-    public List<Film> getFilmOfDirectorSortedBy(Long id, String value) {
-        switch (value) {
+    public List<Film> getFilmOfDirectorSortedBy(long id, String sortKey) {
+        switch (sortKey) {
             case "likes": {
                 final String sqlQuery = "SELECT f.id,\n" +
                         "       f.name,\n" +
@@ -78,7 +78,7 @@ public class DirectorFilmStorageImpl implements DirectorFilmStorage {
                 return jdbcTemplate.query(sqlQuery, FilmStorageImpl::makeFilm, id);
             }
             default:
-                throw new InvalidParameterException("Не правильно указан ключ сортировки SortBylike = " + value);// поменять
+                throw new InvalidParameterException("Не правильно указан ключ сортировки SortBylike = " + sortKey);// поменять
         }
     }
 }

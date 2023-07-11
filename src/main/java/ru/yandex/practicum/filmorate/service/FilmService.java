@@ -19,9 +19,7 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -123,45 +121,41 @@ public class FilmService {
         eventService.createEvent(userId, EventType.LIKE, EventOperation.REMOVE, filmId);
     }
 
-    public Collection<Film> getListOfPopular(Integer count, Long genreId, Long year) {
-        Set<Film> films = new HashSet<>();
+    public Collection<Film> getListOfPopular(int count, long genreId, int year) {
+        Collection<Film> films;
         if (genreId != 0 && year != 0) {
-            Collection<Film> film = filmStorage.getPopularFilmsByYearAndGenre(count, year, genreId);
-            films.addAll(film);
-        } else if (genreId != 0 && year == 0) {
-            Collection<Film> film = filmStorage.getPopularFilmsByGenre(count, genreId);
-            films.addAll(film);
-        } else if (genreId == 0 && year != 0) {
-            Collection<Film> film = filmStorage.getPopularFilmsByYear(count, year);
-            films.addAll(film);
+            films = filmStorage.getPopularFilmsByYearAndGenre(count, year, genreId);
+        } else if (genreId != 0) {
+            films = filmStorage.getPopularFilmsByGenre(count, genreId);
+        } else if (year != 0) {
+            films = filmStorage.getPopularFilmsByYear(count, year);
         } else {
-            films.addAll(filmStorage.getPopularFilms(count));
+            films = filmStorage.getPopularFilms(count);
         }
 
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
 
-        return films
-                .stream()
-                .limit(count)
-                .collect(Collectors.toList());
+        return films;
     }
 
     public Collection<Film> getListOfCommon(long userId, long friendId) {
         final var films = filmStorage.getCommonFilmsSortedByPopularity(userId, friendId);
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
+        films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
         return films;
     }
 
     public Collection<Film> getRecommendedFilms(long id) {
         var films = filmStorage.getRecommendedFilms(id);
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
+        films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
         return films;
     }
 
-    public Collection<Film> getListFilmOfDirectorSortedBy(Long id, String value) {
+    public Collection<Film> getListFilmOfDirectorSortedBy(long id, String sortKey) {
         directorStorage.getById(id);
-        List<Film> films = directorFilmStorage.getFilmOfDirectorSortedBy(id, value);
+        List<Film> films = directorFilmStorage.getFilmOfDirectorSortedBy(id, sortKey);
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
         return films;

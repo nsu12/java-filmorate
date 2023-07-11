@@ -139,7 +139,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getPopularFilmsByGenre(int count, Long genreId) {
+    public Collection<Film> getPopularFilmsByGenre(int count, long genreId) {
         final String sqlQuery =
                 "SELECT f.id, " +
                         "   f.name," +
@@ -165,7 +165,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getPopularFilmsByYear(int count, Long year) {
+    public Collection<Film> getPopularFilmsByYear(int count, int year) {
         final String sqlQuery =
                 "SELECT f.id, " +
                         "   f.name," +
@@ -188,7 +188,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getPopularFilmsByYearAndGenre(int count, Long year, Long genreId) {
+    public Collection<Film> getPopularFilmsByYearAndGenre(int count, int year, long genreId) {
         final String sqlQuery =
                 "SELECT f.id, " +
                         "   f.name," +

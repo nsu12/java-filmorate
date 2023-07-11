@@ -56,7 +56,7 @@ public class FilmController {
     public Collection<Film> getListOfFirstPopularFilms(
             @RequestParam(name = "count", defaultValue = "10") Integer count,
             @RequestParam(defaultValue = "0") Long genreId,
-            @RequestParam(defaultValue = "0") Long year
+            @RequestParam(defaultValue = "0") Integer year
     ) {
         return service.getListOfPopular(count, genreId, year);
     }
@@ -64,9 +64,9 @@ public class FilmController {
     @GetMapping(value = "/director/{id}")
     public Collection<Film> getFilmsWithDirectorSortedByYear(
             @PathVariable("id") Long id,
-            @RequestParam(name = "sortBy", required = true) String value
+            @RequestParam(name = "sortBy") String sortBy
     ) {
-        return service.getListFilmOfDirectorSortedBy(id, value);
+        return service.getListFilmOfDirectorSortedBy(id, sortBy);
     }
 
     @GetMapping(value = "/common")

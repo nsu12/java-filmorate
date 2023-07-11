@@ -62,9 +62,9 @@ public interface FilmStorage {
      */
     Collection<Film> getCommonFilmsSortedByPopularity(long user1Id, long user2Id);
 
-    Collection<Film> getPopularFilmsByYearAndGenre(int count, Long year, Long genreId);
+    Collection<Film> getPopularFilmsByYearAndGenre(int count, int year, long genreId);
 
-    Collection<Film> getPopularFilmsByYear(int count, Long year);
+    Collection<Film> getPopularFilmsByYear(int count, int year);
 
-    Collection<Film> getPopularFilmsByGenre(int count, Long genreId);
+    Collection<Film> getPopularFilmsByGenre(int count, long genreId);
 }
