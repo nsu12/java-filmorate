@@ -8,7 +8,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.EntryNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 
 
@@ -16,7 +15,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.*;
 
 @Component
@@ -217,7 +215,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     //поиск фильма по названию
-    private final String GET_SEARCH_FILMS_BY_NAME = "SELECT f.*, rm.name AS rating_name, "+
+    private final String GET_SEARCH_FILMS_BY_NAME = "SELECT f.*, rm.name AS rating_name, " +
             "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
             "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
             "FROM (" +
