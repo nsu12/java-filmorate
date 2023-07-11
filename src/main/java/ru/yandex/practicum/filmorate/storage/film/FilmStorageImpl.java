@@ -238,6 +238,7 @@ public class FilmStorageImpl implements FilmStorage {
             "GROUP BY f.id " +
             "ORDER BY f.id DESC";
 
+
     //поиск фильма по режиссеру
     private final String GET_SEARCH_FILMS_BY_DIRECTOR = "SELECT f.*, rm.name AS rating_name, " +
             "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
