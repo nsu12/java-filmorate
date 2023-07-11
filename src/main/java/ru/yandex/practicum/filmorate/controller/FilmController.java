@@ -78,9 +78,9 @@ public class FilmController {
     }
 
     @GetMapping(value = "/search")
-    protected List<Film> searchFilms(@RequestParam(name = "query") Optional<String> query,
+    protected Collection<Film> searchFilms(@RequestParam(name = "query") Optional<String> query,
                                      @RequestParam(required = false, name = "by") List<String> by) {
         log.info("Запрос на поиск фильмов...");
-        return (List<Film>) service.searchFilms(query, by);
+        return service.searchFilms(query, by);
     }
 }
