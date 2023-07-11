@@ -77,7 +77,7 @@ public class FilmController {
         return service.getListOfCommon(userId, friendId);
     }
 
-    @GetMapping(value = "/films//search")
+    @GetMapping(value = "/search")
     protected List<Film> searchFilms(@RequestParam(name = "query") Optional<String> query,
                                      @RequestParam(required = false, name = "by") List<String> by) {
         log.info("Запрос на поиск фильмов...");
