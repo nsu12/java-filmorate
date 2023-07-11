@@ -12,5 +12,5 @@ public interface DirectorFilmStorage {
 
     void addDirectorFromFilmOrThrow(long directorId, long filmId);
 
-    List<Film> getFilmOfDirectorSortedBy(Long id, String value);
+    List<Film> getFilmOfDirectorSortedBy(long id, String sortKey);
 }
