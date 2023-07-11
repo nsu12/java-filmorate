@@ -15,15 +15,81 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class FilmStorageImpl implements FilmStorage {
+    private static final String GET_SEARCH_FILMS_BY_NAME = "SELECT f.*, rm.name AS rating_name, " +
+            "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
+            "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
+            "FROM (" +
+            "  SELECT fi.* " +
+            "        FROM film fi " +
+            "        LEFT JOIN " +
+            "        (SELECT film_id, COUNT(*) ff " +
+            "            FROM favorite_films " +
+            "            GROUP BY film_id" +
+            "        ) fil " +
+            "        ON fil.film_id = fi.id " +
+            "        ORDER BY ff DESC" +
+            ") f " +
+            "LEFT JOIN mpa_rating rm ON f.rating_id = rm.id " +
+            "LEFT JOIN film_genre fg ON f.id = fg.film_id " +
+            "LEFT JOIN genre g ON fg.genre_id = g.id " +
+            "LEFT JOIN director_film fd ON f.id = fd.film_id " +
+            "LEFT JOIN director d ON fd.director_id = d.id " +
+            "WHERE LOWER(f.name) LIKE ? " +
+            "GROUP BY f.id " +
+            "ORDER BY f.id DESC";
+
+    private static final String GET_SEARCH_FILMS_BY_DIRECTOR = "SELECT f.*, rm.name AS rating_name, " +
+            "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
+            "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
+            "FROM (" +
+            "  SELECT fi.* " +
+            "        FROM film fi " +
+            "        LEFT JOIN " +
+            "        (SELECT film_id, COUNT(*) ff " +
+            "            FROM favorite_films " +
+            "            GROUP BY film_id" +
+            "        ) fil " +
+            "        ON fil.film_id = fi.id " +
+            "        ORDER BY ff DESC" +
+            ") f " +
+            "LEFT JOIN mpa_rating rm ON f.rating_id = rm.id " +
+            "LEFT JOIN film_genre fg ON f.id = fg.film_id " +
+            "LEFT JOIN genre g ON fg.genre_id = g.id " +
+            "LEFT JOIN director_film fd ON f.id = fd.film_id " +
+            "LEFT JOIN director d ON fd.director_id = d.id " +
+            "WHERE LOWER(d.name) LIKE ? " +
+            "GROUP BY f.id " +
+            "ORDER BY f.id DESC";
+
+    private static final String GET_SEARCH_FILMS_BY_ALL = "SELECT f.*, rm.name AS rating_name, " +
+            "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
+            "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
+            "FROM (" +
+            "  SELECT fi.* " +
+            "        FROM film fi " +
+            "        LEFT JOIN " +
+            "        (SELECT film_id, COUNT(*) ff " +
+            "            FROM favorite_films " +
+            "            GROUP BY film_id" +
+            "        ) fil " +
+            "        ON fil.film_id = fi.id " +
+            "        ORDER BY ff DESC" +
+            ") f " +
+            "LEFT JOIN mpa_rating rm ON f.rating_id = rm.id " +
+            "LEFT JOIN film_genre fg ON f.id = fg.film_id " +
+            "LEFT JOIN genre g ON fg.genre_id = g.id " +
+            "LEFT JOIN director_film fd ON f.id = fd.film_id " +
+            "LEFT JOIN director d ON fd.director_id = d.id " +
+            "WHERE LOWER(f.name) LIKE ? " +
+            "OR LOWER(d.name) LIKE ? " +
+            "GROUP BY f.id " +
+            "ORDER BY f.id DESC";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -290,6 +356,49 @@ public class FilmStorageImpl implements FilmStorage {
         film.setMpa(new MpaRating(rs.getLong("rating_id"), rs.getString("rating_name")));
         return film;
     }
+
+    @Override
+    public List<Film> searchFilms(Optional<String> query, List<String> by) {
+        List<Film> searchedFilms = new ArrayList<>();
+        if (query.get().isEmpty() || query.get().equals(" ")) {
+            return searchedFilms;
+        }
+        String stringInSql = "%" + query.get().toLowerCase() + "%";
+        if (by != null) {
+            log.debug("Получен запрос с параметром by");
+            if (by.size() == 1 & by.contains("title")) {
+                log.debug("Получен запрос на поиск фильма по названию");
+                return getSearchedFilms(GET_SEARCH_FILMS_BY_NAME, stringInSql);
+            }
+            if (by.size() == 1 & by.contains("director")) {
+                log.debug("Получен запрос на поиск фильма по имени режиссера");
+                return getSearchedFilms(GET_SEARCH_FILMS_BY_DIRECTOR, stringInSql);
+            }
+            if (by.size() == 2 & by.contains("title") & by.contains("director")) {
+                log.debug("Получен запрос на поиск фильма по имени режиссера и по названию фильма");
+                searchedFilms = jdbcTemplate.query(GET_SEARCH_FILMS_BY_ALL, (rs, rowNum) -> makeFilm(rs,rowNum), stringInSql, stringInSql);
+                log.debug("Результаты поиска:");
+                for (Film film : searchedFilms) {
+                    log.debug("Фильм с film_id={}: {}", film.getId(), film);
+                }
+                return searchedFilms;
+            } else {
+                throw new IllegalArgumentException("Передан некорректный параметр by!");
+            }
+        }
+        log.debug("Получен запрос без параметра by, выполнен поиск по умолчанию");
+        return getSearchedFilms(GET_SEARCH_FILMS_BY_NAME, stringInSql);
+    }
+
+    private List<Film> getSearchedFilms(String sql, String stringInSql) {
+        List<Film> searchedFilms = jdbcTemplate.query(sql, (rs, rowNum) -> makeFilm(rs,rowNum), stringInSql);
+        log.debug("Результаты поиска:");
+        for (Film film : searchedFilms) {
+            log.debug("Фильм с film_id={}: {}", film.getId(), film);
+        }
+        return searchedFilms;
+    }
+
 
     private Long mapRowToUserIdWhoStayLike(ResultSet resultSet, int rowNum) throws SQLException {
         return resultSet.getLong("user_id");
