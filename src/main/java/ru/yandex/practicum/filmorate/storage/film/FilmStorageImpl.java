@@ -22,6 +22,77 @@ import java.util.*;
 @RequiredArgsConstructor
 public class FilmStorageImpl implements FilmStorage {
 
+
+    private final String GET_SEARCH_FILMS_BY_NAME = "SELECT f.*, rm.name AS rating_name, " +
+            "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
+            "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
+            "FROM (" +
+            "  SELECT fi.* " +
+            "        FROM film fi " +
+            "        LEFT JOIN " +
+            "        (SELECT film_id, COUNT(*) ff " +
+            "            FROM favorite_films " +
+            "            GROUP BY film_id" +
+            "        ) fil " +
+            "        ON fil.film_id = fi.id " +
+            "        ORDER BY ff DESC" +
+            ") f " +
+            "LEFT JOIN mpa_rating rm ON f.rating_id = rm.id " +
+            "LEFT JOIN film_genre fg ON f.id = fg.film_id " +
+            "LEFT JOIN genre g ON fg.genre_id = g.id " +
+            "LEFT JOIN director_film fd ON f.id = fd.film_id " +
+            "LEFT JOIN director d ON fd.director_id = d.id " +
+            "WHERE LOWER(f.name) LIKE ? " +
+            "GROUP BY f.id " +
+            "ORDER BY f.id DESC";
+
+    private final String GET_SEARCH_FILMS_BY_DIRECTOR = "SELECT f.*, rm.name AS rating_name, " +
+            "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
+            "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
+            "FROM (" +
+            "  SELECT fi.* " +
+            "        FROM film fi " +
+            "        LEFT JOIN " +
+            "        (SELECT film_id, COUNT(*) ff " +
+            "            FROM favorite_films " +
+            "            GROUP BY film_id" +
+            "        ) fil " +
+            "        ON fil.film_id = fi.id " +
+            "        ORDER BY ff DESC" +
+            ") f " +
+            "LEFT JOIN mpa_rating rm ON f.rating_id = rm.id " +
+            "LEFT JOIN film_genre fg ON f.id = fg.film_id " +
+            "LEFT JOIN genre g ON fg.genre_id = g.id " +
+            "LEFT JOIN director_film fd ON f.id = fd.film_id " +
+            "LEFT JOIN director d ON fd.director_id = d.id " +
+            "WHERE LOWER(d.name) LIKE ? " +
+            "GROUP BY f.id " +
+            "ORDER BY f.id DESC";
+
+    private final String GET_SEARCH_FILMS_BY_ALL = "SELECT f.*, rm.name AS rating_name, " +
+            "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
+            "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
+            "FROM (" +
+            "  SELECT fi.* " +
+            "        FROM film fi " +
+            "        LEFT JOIN " +
+            "        (SELECT film_id, COUNT(*) ff " +
+            "            FROM favorite_films " +
+            "            GROUP BY film_id" +
+            "        ) fil " +
+            "        ON fil.film_id = fi.id " +
+            "        ORDER BY ff DESC" +
+            ") f " +
+            "LEFT JOIN mpa_rating rm ON f.rating_id = rm.id " +
+            "LEFT JOIN film_genre fg ON f.id = fg.film_id " +
+            "LEFT JOIN genre g ON fg.genre_id = g.id " +
+            "LEFT JOIN director_film fd ON f.id = fd.film_id " +
+            "LEFT JOIN director d ON fd.director_id = d.id " +
+            "WHERE LOWER(f.name) LIKE ? " +
+            "OR LOWER(d.name) LIKE ? " +
+            "GROUP BY f.id " +
+            "ORDER BY f.id DESC";
+
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -213,80 +284,6 @@ public class FilmStorageImpl implements FilmStorage {
         film.setMpa(new MpaRating(rs.getLong("rating_id"), rs.getString("rating_name")));
         return film;
     }
-
-    //поиск фильма по названию
-    private final String GET_SEARCH_FILMS_BY_NAME = "SELECT f.*, rm.name AS rating_name, " +
-            "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
-            "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
-            "FROM (" +
-            "  SELECT fi.* " +
-            "        FROM film fi " +
-            "        LEFT JOIN " +
-            "        (SELECT film_id, COUNT(*) ff " +
-            "            FROM favorite_films " +
-            "            GROUP BY film_id" +
-            "        ) fil " +
-            "        ON fil.film_id = fi.id " +
-            "        ORDER BY ff DESC" +
-            ") f " +
-            "LEFT JOIN mpa_rating rm ON f.rating_id = rm.id " +
-            "LEFT JOIN film_genre fg ON f.id = fg.film_id " +
-            "LEFT JOIN genre g ON fg.genre_id = g.id " +
-            "LEFT JOIN director_film fd ON f.id = fd.film_id " +
-            "LEFT JOIN director d ON fd.director_id = d.id " +
-            "WHERE LOWER(f.name) LIKE ? " +
-            "GROUP BY f.id " +
-            "ORDER BY f.id DESC";
-
-
-    //поиск фильма по режиссеру
-    private final String GET_SEARCH_FILMS_BY_DIRECTOR = "SELECT f.*, rm.name AS rating_name, " +
-            "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
-            "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
-            "FROM (" +
-            "  SELECT fi.* " +
-            "        FROM film fi " +
-            "        LEFT JOIN " +
-            "        (SELECT film_id, COUNT(*) ff " +
-            "            FROM favorite_films " +
-            "            GROUP BY film_id" +
-            "        ) fil " +
-            "        ON fil.film_id = fi.id " +
-            "        ORDER BY ff DESC" +
-            ") f " +
-            "LEFT JOIN mpa_rating rm ON f.rating_id = rm.id " +
-            "LEFT JOIN film_genre fg ON f.id = fg.film_id " +
-            "LEFT JOIN genre g ON fg.genre_id = g.id " +
-            "LEFT JOIN director_film fd ON f.id = fd.film_id " +
-            "LEFT JOIN director d ON fd.director_id = d.id " +
-            "WHERE LOWER(d.name) LIKE ? " +
-            "GROUP BY f.id " +
-            "ORDER BY f.id DESC";
-
-    //поиск фильма по режиссеру и названию
-    private final String GET_SEARCH_FILMS_BY_ALL = "SELECT f.*, rm.name AS rating_name, " +
-            "GROUP_CONCAT(DISTINCT Concat(g.id, '-', g.name) ORDER BY Concat(g.id,'-',g.name)) AS genre_id_name, " +
-            "GROUP_CONCAT(DISTINCT Concat(d.id, '-', d.name) ORDER BY Concat(d.id, '-', d.name)) AS director_id_name " +
-            "FROM (" +
-            "  SELECT fi.* " +
-            "        FROM film fi " +
-            "        LEFT JOIN " +
-            "        (SELECT film_id, COUNT(*) ff " +
-            "            FROM favorite_films " +
-            "            GROUP BY film_id" +
-            "        ) fil " +
-            "        ON fil.film_id = fi.id " +
-            "        ORDER BY ff DESC" +
-            ") f " +
-            "LEFT JOIN mpa_rating rm ON f.rating_id = rm.id " +
-            "LEFT JOIN film_genre fg ON f.id = fg.film_id " +
-            "LEFT JOIN genre g ON fg.genre_id = g.id " +
-            "LEFT JOIN director_film fd ON f.id = fd.film_id " +
-            "LEFT JOIN director d ON fd.director_id = d.id " +
-            "WHERE LOWER(f.name) LIKE ? " +
-            "OR LOWER(d.name) LIKE ? " +
-            "GROUP BY f.id " +
-            "ORDER BY f.id DESC";
 
     @Override
     public List<Film> searchFilms(Optional<String> query, List<String> by) {
