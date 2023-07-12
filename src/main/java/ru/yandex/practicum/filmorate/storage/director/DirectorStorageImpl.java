@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.director;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -13,7 +12,6 @@ import ru.yandex.practicum.filmorate.model.Director;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,12 +20,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class DirectorStorageImpl implements DirectorStorage {
 
-    JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public DirectorStorageImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public Director add(Director director) {
@@ -93,7 +86,7 @@ public class DirectorStorageImpl implements DirectorStorage {
     }
 
     @Override
-    public Collection<Director> getAll() {
+    public List<Director> getAll() {
         return jdbcTemplate.query("SELECT * FROM director", DirectorStorageImpl::makeDirector);
     }
 

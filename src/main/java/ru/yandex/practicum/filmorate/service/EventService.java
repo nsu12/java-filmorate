@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.Instant;
-import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class EventService {
                 type.toString(), userId, operation.toString(), entityId);
     }
 
-    public Collection<Event> getAllByUserId(long userId) {
+    public List<Event> getAllByUserId(long userId) {
         userStorage.getOrThrow(userId);
         var events = eventStorage.getAllForUserOrThrow(userId);
         log.debug("Получено {} событий для пользователя {}", events.size(), userId);

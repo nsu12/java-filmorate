@@ -19,5 +19,4 @@ public interface ReviewStorage {
     List<Review> getAll();
 
     boolean isExists(Integer id);
-
 }

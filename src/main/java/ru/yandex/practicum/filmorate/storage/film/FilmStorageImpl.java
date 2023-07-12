@@ -139,7 +139,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getAll() {
+    public List<Film> getAll() {
         return jdbcTemplate.query(
                 "SELECT f.id, f.name, f.description, f.release_date, f.duration, f.rating_id, mr.name AS rating_name " +
                  "FROM film AS f " +
@@ -183,7 +183,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getPopularFilms(int count) {
+    public List<Film> getPopularFilms(int count) {
         final String sqlQuery =
                 "SELECT f.id, " +
                         "   f.name," +
@@ -205,7 +205,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getPopularFilmsByGenre(int count, long genreId) {
+    public List<Film> getPopularFilmsByGenre(int count, long genreId) {
         final String sqlQuery =
                 "SELECT f.id, " +
                         "   f.name," +
@@ -231,7 +231,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getPopularFilmsByYear(int count, int year) {
+    public List<Film> getPopularFilmsByYear(int count, int year) {
         final String sqlQuery =
                 "SELECT f.id, " +
                         "   f.name," +
@@ -254,7 +254,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getPopularFilmsByYearAndGenre(int count, int year, long genreId) {
+    public List<Film> getPopularFilmsByYearAndGenre(int count, int year, long genreId) {
         final String sqlQuery =
                 "SELECT f.id, " +
                         "   f.name," +
@@ -279,7 +279,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getCommonFilmsSortedByPopularity(long user1Id, long user2Id) {
+    public List<Film> getCommonFilmsSortedByPopularity(long user1Id, long user2Id) {
         final String sqlQuery =
                 "SELECT f.id, " +
                         "   f.name," +
@@ -305,7 +305,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getRecommendedFilms(long id) {
+    public List<Film> getRecommendedFilms(long id) {
         long maxCount = 0L;
         long theMostSimilarUserId = 0L;
         List<Film> recommendations = new ArrayList<>();
@@ -358,7 +358,7 @@ public class FilmStorageImpl implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> searchFilms(String query, List<String> by) {
+    public List<Film> searchFilms(String query, List<String> by) {
         List<Film> searchedFilms = new ArrayList<>();
         if (query.isEmpty() || query.equals(" ")) {
             return searchedFilms;

@@ -12,7 +12,7 @@ import ru.yandex.practicum.filmorate.storage.friends.FriendshipStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
-import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,7 +40,7 @@ public class UserService {
         return user;
     }
 
-    public Collection<User> getAllUsers() {
+    public List<User> getAllUsers() {
         return storage.getAll();
     }
 
@@ -70,12 +70,12 @@ public class UserService {
         eventService.createEvent(userId, EventType.FRIEND, EventOperation.REMOVE, friendId);
     }
 
-    public Collection<User> getUserFriends(long userId) {
+    public List<User> getUserFriends(long userId) {
         storage.getOrThrow(userId); // check user presence
         return friendshipStorage.getUserFriendsOrThrow(userId);
     }
 
-    public Collection<User> getCommonFriendsForUsers(long userId, long otherId) {
+    public List<User> getCommonFriendsForUsers(long userId, long otherId) {
         final var userFriends = friendshipStorage.getUserFriendsOrThrow(userId);
         final var otherUserFriends = friendshipStorage.getUserFriendsOrThrow(otherId);
         return userFriends.stream()

@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
 import java.util.List;
 
 public interface FilmStorage {
@@ -25,7 +24,7 @@ public interface FilmStorage {
      * Получение списка всех фильмов
      * @return список всех фильмов
      */
-    Collection<Film> getAll();
+    List<Film> getAll();
 
     /**
      * Обновление фильма в хранилице
@@ -46,16 +45,16 @@ public interface FilmStorage {
      * @param count количество фильмов для вывода
      * @return список фильмов
      */
-    Collection<Film> getPopularFilms(int count);
+    List<Film> getPopularFilms(int count);
 
-    Collection<Film> searchFilms(String query, List<String> by);
+    List<Film> searchFilms(String query, List<String> by);
 
    /**
      * Возвращает список рекомендованных пользователем фильмов
      * @param userId идентификатор пользователя
      * @return список фильмов
      */
-    Collection<Film> getRecommendedFilms(long userId);
+    List<Film> getRecommendedFilms(long userId);
 
    /**
      * Возвращает список общих для обоих пользователей фильмов, отсортированных по популярности (количеству лайков)
@@ -63,11 +62,11 @@ public interface FilmStorage {
      * @param user2Id идентификатор пользователя 2
      * @return список фильмов
      */
-    Collection<Film> getCommonFilmsSortedByPopularity(long user1Id, long user2Id);
+    List<Film> getCommonFilmsSortedByPopularity(long user1Id, long user2Id);
 
-    Collection<Film> getPopularFilmsByYearAndGenre(int count, int year, long genreId);
+    List<Film> getPopularFilmsByYearAndGenre(int count, int year, long genreId);
 
-    Collection<Film> getPopularFilmsByYear(int count, int year);
+    List<Film> getPopularFilmsByYear(int count, int year);
 
-    Collection<Film> getPopularFilmsByGenre(int count, long genreId);
+    List<Film> getPopularFilmsByGenre(int count, long genreId);
 }

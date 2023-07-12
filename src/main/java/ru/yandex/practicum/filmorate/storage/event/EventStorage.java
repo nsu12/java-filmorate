@@ -2,7 +2,7 @@ package ru.yandex.practicum.filmorate.storage.event;
 
 import ru.yandex.practicum.filmorate.model.Event;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface EventStorage {
     /**
@@ -10,7 +10,7 @@ public interface EventStorage {
      * @param userId userId идентификатор пользователя
      * @return список событий
      */
-    Collection<Event> getAllForUserOrThrow(long userId);
+    List<Event> getAllForUserOrThrow(long userId);
 
     /**
      * Добавляет событие в хранилище

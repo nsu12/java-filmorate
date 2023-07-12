@@ -13,7 +13,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,7 +24,7 @@ public class UserStorageImpl implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Collection<User> getAll() {
+    public List<User> getAll() {
         return jdbcTemplate.query("SELECT * FROM user_account", UserStorageImpl::makeUser);
     }
 

@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -16,7 +16,7 @@ public class EventStorageImpl implements EventStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Collection<Event> getAllForUserOrThrow(long userId) {
+    public List<Event> getAllForUserOrThrow(long userId) {
         String sqlQuery = "SELECT * FROM event WHERE user_id = ?";
         return jdbcTemplate.query(sqlQuery, EventStorageImpl::makeEvent, userId);
     }

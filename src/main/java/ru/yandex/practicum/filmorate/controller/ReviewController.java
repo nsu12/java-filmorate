@@ -1,31 +1,28 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping(value = "/reviews")
 public class ReviewController {
 
-    ReviewService reviewService;
-    EventService eventService;
+    private final ReviewService reviewService;
 
     @PostMapping
-    public Review add(@Valid @RequestBody Review filmReview) {
+    public Review add(@RequestBody Review filmReview) {
         return reviewService.add(filmReview);
     }
 
     @PutMapping
-    public Review update(@Valid @RequestBody Review filmReview) {
+    public Review update(@RequestBody Review filmReview) {
         return reviewService.update(filmReview);
     }
 
@@ -36,8 +33,8 @@ public class ReviewController {
 
     @GetMapping
     public List<Review> getAll(
-            @RequestParam(name = "filmId", defaultValue = "-1", required = false) Integer filmId,
-            @RequestParam(name = "count", defaultValue = "10", required = false) Integer count
+            @RequestParam(name = "filmId", defaultValue = "-1") Integer filmId,
+            @RequestParam(name = "count", defaultValue = "10") Integer count
     ) {
         return reviewService.getAll(filmId, count);
     }
@@ -66,5 +63,4 @@ public class ReviewController {
     public void deleteUserDislike(@PathVariable("id") Integer id, @PathVariable("userId") Integer userId) {
         reviewService.deleteDislikeFromFilmReview(id, userId);
     }
-
 }

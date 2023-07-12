@@ -9,7 +9,7 @@ import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -21,7 +21,7 @@ public class UserController {
     private final EventService eventService;
 
     @GetMapping
-    public Collection<User> getAllUsers() {
+    public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
@@ -56,26 +56,26 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}/friends")
-    public Collection<User> getUserFriends(@PathVariable("id") Long userId) {
+    public List<User> getUserFriends(@PathVariable("id") Long userId) {
         return userService.getUserFriends(userId);
     }
 
     @GetMapping(value = "/{id}/friends/common/{otherId}")
-    public Collection<User> getUsersCommonFriends(
+    public List<User> getUsersCommonFriends(
             @PathVariable("id") Long userId, @PathVariable("otherId") Long otherId
     ) {
         return userService.getCommonFriendsForUsers(userId, otherId);
     }
 
     @GetMapping(value = "/{id}/recommendations")
-    public Collection<Film> getFilmRecommendations(
+    public List<Film> getFilmRecommendations(
             @PathVariable("id") Long userId
     ) {
         return filmService.getRecommendedFilms(userId);
     }
 
     @GetMapping(value = "/{id}/feed")
-    public Collection<Event> getFeed(
+    public List<Event> getFeed(
             @PathVariable("id") Long userId
     ) {
         return eventService.getAllByUserId(userId);

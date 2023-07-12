@@ -7,7 +7,8 @@ import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 
-import java.util.Collection;
+import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -16,16 +17,15 @@ import java.util.Collection;
 public class DirectorService {
     private final DirectorStorage directorStorage;
 
-    public Director create(Director director) {
-        Director directorCreated = directorStorage.add(director);
-        return directorCreated;
+    public Director create(@Valid Director director) {
+        return directorStorage.add(director);
     }
 
     public Director get(Long id) {
         return directorStorage.getById(id);
     }
 
-    public Collection<Director> getAllDirectors() {
+    public List<Director> getAllDirectors() {
         return directorStorage.getAll();
     }
 
@@ -33,7 +33,7 @@ public class DirectorService {
         directorStorage.delete(id);
     }
 
-    public Director update(Director director) {
+    public Director update(@Valid Director director) {
         return directorStorage.update(director);
     }
 }

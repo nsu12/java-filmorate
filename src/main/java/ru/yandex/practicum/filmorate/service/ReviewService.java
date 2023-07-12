@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.exception.EntryNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewValidationException;
 import ru.yandex.practicum.filmorate.model.EventOperation;
@@ -12,12 +13,14 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.filmReview.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.filmReviewRating.ReviewRatingStorage;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
+@Validated
 @Service
 public class ReviewService {
 
@@ -51,7 +54,7 @@ public class ReviewService {
         return reviews;
     }
 
-    public Review add(Review filmReview) {
+    public Review add(@Valid Review filmReview) {
         log.debug("Добавление нового отзыва: {}", filmReview);
         performChecks(filmReview);
         Review review = reviewStorage.add(filmReview);
@@ -61,7 +64,7 @@ public class ReviewService {
         return review;
     }
 
-    public Review update(Review filmReview) {
+    public Review update(@Valid Review filmReview) {
         log.debug("Обновление отзыва: {}", filmReview);
         performChecks(filmReview);
         Review review = reviewStorage.update(filmReview);

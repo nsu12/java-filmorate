@@ -18,7 +18,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,7 +35,7 @@ public class FilmService {
     private final DirectorStorage directorStorage;
     private final DirectorFilmStorage directorFilmStorage;
 
-    public Collection<Film> getAllFilms() {
+    public List<Film> getAllFilms() {
         var films = filmStorage.getAll();
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
@@ -122,8 +121,8 @@ public class FilmService {
         eventService.createEvent(userId, EventType.LIKE, EventOperation.REMOVE, filmId);
     }
 
-    public Collection<Film> getListOfPopular(int count, long genreId, int year) {
-        Collection<Film> films;
+    public List<Film> getListOfPopular(int count, long genreId, int year) {
+        List<Film> films;
         if (genreId != 0 && year != 0) {
             films = filmStorage.getPopularFilmsByYearAndGenre(count, year, genreId);
         } else if (genreId != 0) {
@@ -140,21 +139,21 @@ public class FilmService {
         return films;
     }
 
-    public Collection<Film> getListOfCommon(long userId, long friendId) {
+    public List<Film> getListOfCommon(long userId, long friendId) {
         final var films = filmStorage.getCommonFilmsSortedByPopularity(userId, friendId);
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
         return films;
     }
 
-    public Collection<Film> getRecommendedFilms(long id) {
+    public List<Film> getRecommendedFilms(long id) {
         var films = filmStorage.getRecommendedFilms(id);
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
         return films;
     }
 
-    public Collection<Film> getListFilmOfDirectorSortedBy(long id, String sortKey) {
+    public List<Film> getListFilmOfDirectorSortedBy(long id, String sortKey) {
         directorStorage.getById(id);
         List<Film> films = directorFilmStorage.getFilmOfDirectorSortedBy(id, sortKey);
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
@@ -162,8 +161,8 @@ public class FilmService {
         return films;
     }
 
-    public Collection<Film> searchFilms(String query, List<String> by) {
-        Collection<Film> films = filmStorage.searchFilms(query, by);
+    public List<Film> searchFilms(String query, List<String> by) {
+        List<Film> films = filmStorage.searchFilms(query, by);
         films.forEach(film -> film.setGenres(filmGenreStorage.getFilmGenresOrThrow(film.getId())));
         films.forEach(film -> film.setDirectors(directorFilmStorage.getFilmDirectorsOrThrow(film.getId())));
         return films;

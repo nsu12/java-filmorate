@@ -1,25 +1,22 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.util.Collection;
 import java.util.List;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping(value = "/films")
 public class FilmController {
     private final FilmService service;
 
-    public FilmController(FilmService service) {
-        this.service = service;
-    }
-
     @GetMapping
-    public Collection<Film> getAll() {
+    public List<Film> getAll() {
         return service.getAllFilms();
     }
 
@@ -54,7 +51,7 @@ public class FilmController {
     }
 
     @GetMapping(value = "/popular")
-    public Collection<Film> getListOfFirstPopularFilms(
+    public List<Film> getListOfFirstPopularFilms(
             @RequestParam(name = "count", defaultValue = "10") Integer count,
             @RequestParam(defaultValue = "0") Long genreId,
             @RequestParam(defaultValue = "0") Integer year
@@ -63,7 +60,7 @@ public class FilmController {
     }
 
     @GetMapping(value = "/director/{id}")
-    public Collection<Film> getFilmsWithDirectorSortedByYear(
+    public List<Film> getFilmsWithDirectorSortedByYear(
             @PathVariable("id") Long id,
             @RequestParam(name = "sortBy") String sortBy
     ) {
@@ -71,7 +68,7 @@ public class FilmController {
     }
 
     @GetMapping(value = "/common")
-    public Collection<Film> getListOfCommonFilms(
+    public List<Film> getListOfCommonFilms(
             @RequestParam(name = "userId") Long userId,
             @RequestParam(name = "friendId") Long friendId
     ) {
@@ -79,7 +76,7 @@ public class FilmController {
     }
 
     @GetMapping(value = "/search")
-    protected Collection<Film> searchFilms(
+    protected List<Film> searchFilms(
             @RequestParam(name = "query") String query,
             @RequestParam(name = "by") List<String> by) {
         log.debug("Запрос на поиск фильмов...");

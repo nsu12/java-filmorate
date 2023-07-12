@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component("ReviewDbStorage")
+@Component
 public class ReviewStorageImpl implements ReviewStorage {
 
     private static final String GET_REVIEW_BASE_QUERY =

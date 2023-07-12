@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @RequiredArgsConstructor
-@Component("ReviewRatingDbStorage")
+@Component
 public class ReviewRatingStorageImpl implements ReviewRatingStorage {
 
     private static final String MERGE_REVIEW_RATING_QUERY =
