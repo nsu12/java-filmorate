@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.MpaRating;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 
 @Component
@@ -18,7 +17,7 @@ public class MpaRatingStorageImpl implements MpaRatingStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Collection<MpaRating> getAll() {
+    public List<MpaRating> getAll() {
         return jdbcTemplate.query("SELECT * FROM mpa_rating", MpaRatingStorageImpl::makeRating);
     }
 

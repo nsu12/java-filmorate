@@ -22,11 +22,21 @@ public class Film {
     private MpaRating mpa;
     private Set<Genre> genres = new TreeSet<>(Comparator.comparingLong(Genre::getId));
 
+    private Set<Director> directors = new HashSet<>();
+
     public List<Genre> getGenres() {
         return genres.stream().collect(Collectors.toList());
     }
 
     public void setGenres(List<Genre> listOfGenres) {
         genres.addAll(listOfGenres);
+    }
+
+    public void setDirectors(List<Director> listOfDirectors) {
+        directors.addAll(listOfDirectors);
+    }
+
+    public void clearDirectors() {
+        directors.clear();
     }
 }

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.MpaRating;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaRatingStorage;
 
-import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +16,7 @@ public class MpaRatingService {
         return ratingStorage.getOrThrow(id);
     }
 
-    public Collection<MpaRating> getAll() {
+    public List<MpaRating> getAll() {
         return ratingStorage.getAll();
     }
 }
